@@ -345,6 +345,7 @@ $ grunt
 * Better handling non-JSON responses
 * More testing (webhooks & searchs)
 * Code usage examples
+* CLI support
 
 # License
 
