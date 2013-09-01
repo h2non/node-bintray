@@ -269,9 +269,9 @@ For more information about the usage limits, take a look to the [documentation](
 
 # Promises API
 
-The library uses a promise-based wrapper for async tasks based on [Q.js](https://github.com/kriskowal/q)
+The library use a promise-based wrapper for async tasks handling made easy and elegant. It uses internally [Q.js](https://github.com/kriskowal/q)
 
-The promise resolve/error Object has the following members:
+The promise resolve/error object has the following members:
 
 * `data` The HTTP response body or error message. It can be an object if it was served as application/json mime type
 * `code` The HTTP response status code
