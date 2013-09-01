@@ -2,7 +2,7 @@
 
 A Bintray API client for Node.js (written in CoffeeScript)
 
-## DO NOT USE, WORK STILL IN PROGRESS!
+## JUST FOR TESTING, WORK IN PROGRESS!
 
 # Installation
 
