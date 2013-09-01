@@ -18,91 +18,89 @@ For more information about the current API stage, see the [Bintray documentation
 
 ## Constructor
 
-### new Bintray (username, apiToken, subject[, repository])
-
-The first three arguments are required.
+#### new Bintray (username, apiToken, subject[, repository])
 
 ## Repositories
 
-### getRepositories ()
+#### getRepositories ()
 
-### getRepository ()
+#### getRepository ()
 
-### selectRepository (repositoryName)
+#### selectRepository (repositoryName)
 
-### selectSubject (subject)
+#### selectSubject (subject)
 
 ## Packages
 
-### getPackages ([start = 0, startName])
+#### getPackages ([start = 0, startName])
 
-### getPackage (pkgname)
+#### getPackage (pkgname)
 
-### createPackage (packageObject)
+#### createPackage (packageObject)
 
-### deletePackage (pkgname)
+#### deletePackage (pkgname)
 
-### updatePackage (pkgname, packageObject)
+#### updatePackage (pkgname, packageObject)
 
-### getPackageVersion (pkgname, version = '_latest')
+#### getPackageVersion (pkgname, version = '_latest')
 
-### createPackageVersion (pkgname, versionObject)
+#### createPackageVersion (pkgname, versionObject)
 
-### deletePackageVersion (pkgname, version)
+#### deletePackageVersion (pkgname, version)
 
-### updatePackageVersion (pkgname, version)
+#### updatePackageVersion (pkgname, version)
 
-### getVersionAttrs (pkgname, attributes, version = '_latest')
+#### getVersionAttrs (pkgname, attributes, version = '_latest')
 
-### setPackageAttrs (pkgname, attributesObj [, version])
+#### setPackageAttrs (pkgname, attributesObj [, version])
 
-### updatePackageAttrs (pkgname, attributesObj [, version])
+#### updatePackageAttrs (pkgname, attributesObj [, version])
 
-### deletePackageAttrs (pkgname, names [, version])
+#### deletePackageAttrs (pkgname, names [, version])
 
 ## Search
 
-### searchRepository (repositoryName [, descendant = false])
+#### searchRepository (repositoryName [, descendant = false])
 
-### searchPackage (pkgname [, descendant = false, subject = current, repository = current])
+#### searchPackage (pkgname [, descendant = false, subject = current, repository = current])
 
-### searchUser (pkgname)
+#### searchUser (pkgname)
 
-### searchAttributes (attributesObj, name)
+#### searchAttributes (attributesObj, name)
 
-### searchFile (filename [, repository = current])
+#### searchFile (filename [, repository = current])
 
-### searchFileChecksum (hash [, repository = current])
+#### searchFileChecksum (hash [, repository = current])
 
 ## User
 
-### getUser (username)
+#### getUser (username)
 
-### getUserFollowers (username [, startPosition = 0])
+#### getUserFollowers (username [, startPosition = 0])
 
 ## Uploads
 
-### uploadPackage (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application-octet-stream'])
+#### uploadPackage (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application-octet-stream'])
 
-### mavenUpload (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application-octet-stream'])
+#### mavenUpload (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application-octet-stream'])
 
-### publishPackage (name, version [, discard = false])
+#### publishPackage (name, version [, discard = false])
 
 ## Webhooks
 
-### getWebhooks (repositoryName)
+#### getWebhooks (repositoryName)
 
-### createWebhook (pkgname, configObject)
+#### createWebhook (pkgname, configObject)
 
-### testWebhook (pkgname, version, configObject)
+#### testWebhook (pkgname, version, configObject)
 
-### deleteWebhook (pkgname)
+#### deleteWebhook (pkgname)
 
 ## Signing
 
-### signFile (remotePath [, passphrase])
+#### signFile (remotePath [, passphrase])
 
-### signVersion (pkgname, version [, passphrase])
+#### signVersion (pkgname, version [, passphrase])
 
 
 # Example usage
@@ -174,4 +172,4 @@ $ grunt
 
 # License
 
-Code under [MIT](https://github.com/h2non/node-bintray/master/LICENSE) license
+Code under [MIT](https://github.com/h2non/node-bintray/blob/master/LICENSE) license
