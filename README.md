@@ -16,6 +16,36 @@ For full API usage, you must create and account at [Bintray](https://bintray.com
 
 When you get an account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
+# Example usage
+
+```js
+
+var Bintray = require('bintray');
+
+var repository = new Bintray('username', 'apiToken', 'my-packages', 'stable')
+
+var myPackage = {
+    name: 'node',
+    desc: 'Node.js event-based server-side javascript engine',
+    labels: ['JavaScript', 'Server-side', 'Node'],
+    licenses: ['MIT']
+  };
+
+repository.createPackage(myPackage)
+  .then(function(response) {
+    console.log('Package registered: ', response.code);
+
+    repository.getPackages()
+      .then(function (response) {
+        console.log(response.data);
+      });
+
+  }, function(error) {
+    console.error('Cannot create the package: ', error.code);
+  });
+
+```
+
 # API
 
 The current implementation only supports the Bintray REST API version `1.0`
@@ -277,35 +307,6 @@ The promise resolve/error object has the following members:
 * `code` The HTTP response status code
 * `response` The HTTP native response object
 
-# Example usage
-
-```js
-
-var Bintray = require('bintray');
-
-var repository = new Bintray('username', 'apiToken', 'my-packages', 'stable')
-
-var myPackage = {
-    name: 'node',
-    desc: 'Node.js event-based server-side javascript engine',
-    labels: ['JavaScript', 'Server-side', 'Node'],
-    licenses: ['MIT']
-  };
-
-repository.createPackage(myPackage)
-  .then(function(response) {
-    console.log('Package registered: ', response.code);
-
-    repository.getPackages()
-      .then(function (response) {
-        console.log(response.data);
-      });
-
-  }, function(error) {
-    console.error('Cannot create the package: ', error.code);
-  });
-
-```
 
 # Changelog
 
