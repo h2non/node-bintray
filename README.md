@@ -1,6 +1,6 @@
 # Node Bintray
 
-A Bintray API client for Node.js (written in CoffeeScript)
+A [Bintray](https://bintray.com) API client for Node.js (written in CoffeeScript)
 
 ## JUST FOR TESTING, WORK IN PROGRESS!
 
@@ -12,7 +12,7 @@ $ npm install bintray --save
 
 # Requirements
 
-For full API usage, you must create an account at [Bintray](https://bintray.com)
+For full API usage, you must create an account in [Bintray.com](https://bintray.com)
 
 When you get an account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
@@ -308,11 +308,6 @@ The promise resolve/error object has the following members:
 * `response` The HTTP native response object
 
 
-# Changelog
-
-* `0.1.0` 01-09-2013
-  - Initial version (work in progress)
-
 # Testing
 
 Clone the repository
@@ -339,11 +334,15 @@ Compile and test (you should have installed grunt-cli as global package and via 
 $ grunt 
 ```
 
+# Changelog
+
+* `0.1.0` 01-09-2013
+  - Initial version (work in progress)
+
 # TODO
 
-* Validate/control rate limit usage from the library
-* Better handling non-JSON responses
-* More testing (webhooks & searchs)
+* Better error handling
+* More tests (webhooks & searchs)
 * Code usage examples
 * CLI support
 
