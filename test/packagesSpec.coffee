@@ -35,7 +35,6 @@ describe 'Packages:', ->
             done error.data
 
   it 'should update package information', (done) -> 
-
     repository.updatePackage('node', {
       desc: 'Node.js rules',
       licenses: [ 'BSD' ]
@@ -43,12 +42,12 @@ describe 'Packages:', ->
       .then (response) ->
             try 
               assert.equal response.code, 200
-              
               repository.getPackage('node')
                 .then (response) ->
-                      assert.equal response.code, 200
-                      assert.deepEqual response.data.desc, 'Node.js rules'
-                      done()
+                        console.log 'Error', response.code
+                        assert.equal response.code, 200
+                        assert.deepEqual response.data.desc, 'Node.js rules'
+                        done()
                     , (error) ->
                       done error.data
             catch
@@ -57,9 +56,12 @@ describe 'Packages:', ->
             done error.data 
 
   it 'should remove the package', (done) ->
-    repository.deletePackage('node')
-      .then (response) ->
-            assert.equal response.code, 200
-            done()
-          , (error) ->
-            done error.data
+      repository.deletePackage('node')
+        .then (response) ->
+              try 
+                assert.equal response.code, 200
+                done()
+              catch e
+                done e
+            , (error) ->
+              done error.data

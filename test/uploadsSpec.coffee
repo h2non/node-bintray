@@ -49,7 +49,9 @@ describe 'Uploads:', ->
               .then (response) ->
                     console.log release.data
                     done()
-            console.log(response)
+                  , (error) ->
+                    done error.data
+            console.log('status: ', response.code)
           , (error) ->
             done error.data
 

@@ -14,6 +14,7 @@ module.exports = class Bintray
 
     throw new Error 'Username param required' if !username
     throw new Error 'API token param required' if !apiToken
+    throw new Error 'Subject param required' if !subject
 
     @rest = new Rest { baseUrl: Bintray.apiBaseUrl, username: username, password: apiToken }
     @subject = subject
@@ -212,7 +213,6 @@ module.exports = class Bintray
     endpoint = "/gpg/@{@endpointBase}/#{pkgname}/versions/#{version}" + (if passphrase then "?passphrase=#{passphrase}" else '')
     return @rest.post endpoint
 
-  # TODO
   getRateLimit: ->
     return @rest.rateLimit
 

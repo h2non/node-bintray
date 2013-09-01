@@ -15,6 +15,8 @@ module.exports = (grunt) ->
 
       coffee:
         src:
+          options:
+            base: false
           expand: true
           cwd: 'src'
           src: ['**/*.coffee']
@@ -24,7 +26,7 @@ module.exports = (grunt) ->
       watch:
         src:
           files: 'src/**/*.coffee'
-          tasks: [ 'coffee:src', 'mochacli' ]
+          tasks: [ 'coffee:src', 'test' ]
 
    grunt.registerTask 'default', ['coffee', 'mochacli']
    grunt.registerTask 'test', ['mochacli']
