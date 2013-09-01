@@ -14,7 +14,7 @@ $ npm install bintray --save
 
 For full API usage, you must create and account at [Bintray](https://bintray.com)
 
-When you get and account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
+When you get an account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
 # API
 
