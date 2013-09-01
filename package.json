@@ -1,7 +1,7 @@
 {
   "name": "bintray",
   "version": "0.1.0",
-  "description": "Node REST client library for Bintray",
+  "description": "A Bintray API client for Node.js",
   "author": {
     "name": "Tomas Aparicio",
     "email": "tomas@aparicio.me",
@@ -24,6 +24,9 @@
     "lib": "./lib"
   },
   "main": "./lib/bintray",
+  "bin": {
+    "bintray": "./bin/bintray"
+  },
   "engines": {
     "node": ">= 0.8.x"
   },

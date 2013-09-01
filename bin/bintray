@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var cli = require('../lib/cli');
+var pkg = require('../package.json');
+
+// TODO
+program
+  .version(pkg.version)
+  .option('-u, --user', 'Username')
+  .option('-p, --password', 'API token')
+  .option('-s, --subject', 'Subject organization')
+  .option('-r, --repository', 'Repository name (optional)')
+  .parse(process.argv);

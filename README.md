@@ -328,10 +328,10 @@ Configure the JSON file for real testing
 $ echo '{ "username": "<yourUsername>", "apiToken": "<yourApiToken>", "subject": "myName", "repository": "testing" }' > test/config.json
 ```
 
-Compile and test (you should have installed grunt-cli as global package and via $PATH accesible)
+Compile and test (you should have installed grunt-cli as global package)
 
 ```shell
-$ grunt 
+$ npm test
 ```
 
 # Changelog
