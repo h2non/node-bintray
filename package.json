@@ -32,7 +32,8 @@
   },
   "dependencies": {
     "restler": "~2.0.1",
-    "q": "~0.9.6"
+    "q": "~0.9.6",
+    "commander": "~2.0.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

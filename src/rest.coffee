@@ -42,7 +42,6 @@ module.exports = class Rest
       .on 'complete', (result, response) =>
         if @getRateLimit(response) is 0
           response.statusCode = 300
-          console.log response.statusCode
           deferred.reject promiseResponse response, 'You have exceeded your API call limit'
         else if result instanceof Error 
           deferred.reject promiseResponse response, result
@@ -50,9 +49,12 @@ module.exports = class Rest
           deferred.reject promiseResponse response, result
         else
           deferred.resolve promiseResponse response, result
+
+      ###
       .on 'error', (err, response) ->
         console.log(err)
         deferred.reject promiseResponse response, err
+      ###
 
     return deferred.promise
 

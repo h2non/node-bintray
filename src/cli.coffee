@@ -1,4 +1,4 @@
-Bintray = require 'bintray'
+Bintray = require './bintray'
 
 # TODO
 module.exports = {}
