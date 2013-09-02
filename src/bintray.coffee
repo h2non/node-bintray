@@ -12,10 +12,6 @@ module.exports = class Bintray
 
   constructor: (username, apiToken, subject, repository) -> 
 
-    throw new Error 'Username param required' if !username
-    throw new Error 'API token param required' if !apiToken
-    throw new Error 'Subject param required' if !subject
-
     @rest = new Rest { baseUrl: Bintray.apiBaseUrl, username: username, password: apiToken }
     @subject = subject
     @repository = repository

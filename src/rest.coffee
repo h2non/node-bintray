@@ -58,6 +58,9 @@ module.exports = class Rest
 
     return deferred.promise
 
+  setAuth: (username, password) ->
+    _.extend @options, { username: username, password: password }
+
   get: (path) ->
     return @wrapResponse rest.get(@baseUrl + path, {
       headers: @options.headers

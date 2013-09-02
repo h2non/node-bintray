@@ -5,14 +5,14 @@ config = require './config.json'
 username = config.username
 token = config.apiToken
 subject = config.subject
-repository = config.repository
+client = config.client
 
-repository = new Bintray username, token, subject, repository
+client = new Bintray username, token, subject, client
 
 describe 'Uploads:', ->
 
   it 'should register a new package properly', (done) ->
-    repository.createPackage({
+    client.createPackage({
       name: 'beaker'
       desc: 'Another super package'
       labels: [ 'beaker', 'muppets' ]
@@ -25,7 +25,7 @@ describe 'Uploads:', ->
             done error.data
 
   it 'should retrieve and find the created package', (done) -> 
-    repository.getPackages()
+    client.getPackages()
       .then (response) ->
             assert.equal response.code, 200, 
             assert.deepEqual _.find(response.data, { 'name': 'beaker' }), { name: 'beaker', linked: false }
@@ -34,7 +34,7 @@ describe 'Uploads:', ->
             done error.data
 
   it 'should creates a new package version', (done) ->
-    repository.createPackageVersion('beaker', {
+    client.createPackageVersion('beaker', {
       name: '0.1.0',
       release_notes: 'First version',
       release_url: 'http://en.wikipedia.org/wiki/Beaker_(Muppet)'
@@ -43,9 +43,9 @@ describe 'Uploads:', ->
             assert.equal response.statusCode, 201
 
   it 'should upload the file properly', (done) ->
-    repository.uploadPackage('beaker', '0.1.0', "#{__dirname}/fixtures/beaker.gz", '0.1.0/beaker.gz')
+    client.uploadPackage('beaker', '0.1.0', "#{__dirname}/fixtures/beaker.gz", '0.1.0/beaker.gz')
       .then (response) ->
-            repository.getPackage('beaker')
+            client.getPackage('beaker')
               .then (response) ->
                     console.log release.data
                     done()
@@ -56,7 +56,7 @@ describe 'Uploads:', ->
             done error.data
 
   it 'should remove the package', (done) ->
-    repository.deletePackage('beaker')
+    client.deletePackage('beaker')
       .then (response) ->
             assert.equal response.code, 200
             done()
