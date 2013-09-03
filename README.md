@@ -1,6 +1,6 @@
 # Node Bintray
 
-A [Bintray](https://bintray.com) API client for Node.js (written in CoffeeScript)
+A [Bintray](https://bintray.com) CLI and Node.js API client for easy package management (written in CoffeeScript)
 
 ## JUST FOR TESTING, WORK IN PROGRESS!
 
@@ -12,7 +12,7 @@ $ npm install bintray --save
 
 # Requirements
 
-For full API usage, you must create an account in [Bintray.com](https://bintray.com)
+For full API usage, you must create an account at [Bintray.com](https://bintray.com)
 
 When you get an account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
@@ -48,9 +48,9 @@ repository.createPackage(myPackage)
 
 # API
 
-The current implementation only supports the Bintray REST API version `1.0`
+The current implementation only supports the REST API version `1.0`
 
-For more information about the current API stage, see the [Bintray documentation](https://bintray.com/docs/api.html)
+For more information about the current API stage, see the [Bintray API documentation](https://bintray.com/docs/api.html)
 
 ## Constructor
 
@@ -102,7 +102,7 @@ Get general information about a specified package. This resource does not requir
 
 [Link to documentation](https://bintray.com/docs/api.html#_get_packages)
 
-#### getPackage (pkgname)
+#### getPackage (packageName)
 
 Get general information about a specified package. This resource is rate limit free
 
@@ -114,62 +114,62 @@ Creates a new package in the specified repo (user has to be an owner of the repo
 
 [Link to documentation](https://bintray.com/docs/api.html#_create_package)
 
-#### deletePackage (pkgname)
+#### deletePackage (packageName)
 
 Delete the specified package
 
 [Link to documentation](https://bintray.com/docs/api.html#_delete_package)
 
-#### updatePackage (pkgname, packageObject)
+#### updatePackage (packageName, packageObject)
 
 Update the information of the specified package.
 Creates a new package in the specified repo (user has to be an owner of the repo)
 
 [Link to documentation](https://bintray.com/docs/api.html#_update_package)
 
-#### getPackageVersion (pkgname, version = '_latest')
+#### getPackageVersion (packageName, version = '_latest')
 
 Get general information about a specified version, or query for the latest version
 
 [Link to documentation](https://bintray.com/docs/api.html#_get_version)
 
-#### createPackageVersion (pkgname, versionObject)
+#### createPackageVersion (packageName, versionObject)
 
 Creates a new version in the specified package (user has to be owner of the package)
 
 [Link to documentation](https://bintray.com/docs/api.html#_create_version)
 
-#### deletePackageVersion (pkgname, version)
+#### deletePackageVersion (packageName, version)
 
 Delete the specified version Published versions may be deleted within 30 days from their publish date.
 
 [Link to documentation](https://bintray.com/docs/api.html#_delete_version)
 
-#### updatePackageVersion (pkgname, version)
+#### updatePackageVersion (packageName, version)
 
 Update the information of the specified version
 
 [Link to documentation](https://bintray.com/docs/api.html#_update_version)
 
-#### getVersionAttrs (pkgname, attributes, version = '_latest')
+#### getVersionAttrs (packageName, attributes, version = '_latest')
 
 Get attributes associated with the specified package or version. If no attribute names are specified, return all attributes.
 
 [Link to documentation](https://bintray.com/docs/api.html#_get_attributes)
 
-#### setPackageAttrs (pkgname, attributesObj [, version])
+#### setPackageAttrs (packageName, attributesObj [, version])
 
 Associate attributes with the specified package or version, overriding all previous attributes.
 
 [Link to documentation](https://bintray.com/docs/api.html#_set_attributes)
 
-#### updatePackageAttrs (pkgname, attributesObj [, version])
+#### updatePackageAttrs (packageName, attributesObj [, version])
 
 Update attributes associated with the specified package or version.
 
 [Link to documentation](https://bintray.com/docs/api.html#_update_attributes)
 
-#### deletePackageAttrs (pkgname, names [, version])
+#### deletePackageAttrs (packageName, names [, version])
 
 Delete attributes associated with the specified repo, package or version. If no attribute names are specified, delete all attributes
 
@@ -183,13 +183,13 @@ Search for a repository. At least one of the name and desc search fields need to
 
 [Link to documentation](https://bintray.com/docs/api.html#_repository_search)
 
-#### searchPackage (pkgname [, descendant = false, subject = current, repository = current])
+#### searchPackage (packageName [, descendant = false, subject = current, repository = current])
 
 Search for a package. At least one of the name and desc search fields need to be specified. May take an optional single subject name and if specified, and optional (exact) repo name. Returns an array of results, where elements are similar to the result of getting a single package.
 
 [Link to documentation](https://bintray.com/docs/api.html#_package_search)
 
-#### searchUser (pkgname)
+#### searchUser (packageName)
 
 [Link to documentation](https://bintray.com/docs/api.html#_delete_attributes)
 
@@ -251,20 +251,20 @@ Get all the webhooks registered for the specified subject, optionally for a spec
 
 [Link to documentation](https://bintray.com/docs/api.html#_get_webhooks)
 
-#### createWebhook (pkgname, configObject)
+#### createWebhook (packageName, configObject)
 
 Register a webhook for receiving notifications on a new package release. By default a user can register up to 10 webhook callbacks.
 
 [Link to documentation](https://bintray.com/docs/api.html#_register_a_webhook)
 
-#### testWebhook (pkgname, version, configObject)
+#### testWebhook (packageName, version, configObject)
 
 Test a webhook callback for the specified package release. 
 A webhook post request is authenticated with a authentication header that is the HMAC-MD5 of the registering subject’s API key seeded with package name, base64-encoded UTF-8 string.
 
 [Link to documentation](https://bintray.com/docs/api.html#_test_a_webhook)
 
-#### deleteWebhook (pkgname)
+#### deleteWebhook (packageName)
 
 Delete a webhook associated with the specified package.
 
@@ -278,7 +278,7 @@ GPG sign the specified repository file. This operation requires enabling GPG sig
 
 [Link to documentation](https://bintray.com/docs/api.html#_gpg_sign_a_file)
 
-#### signVersion (pkgname, version [, passphrase])
+#### signVersion (packageName, version [, passphrase])
 
 GPG sign all files associated with the specified version.
 
@@ -299,7 +299,7 @@ For more information about the usage limits, take a look to the [documentation](
 
 # Promises API
 
-The library use a promise-based wrapper for async tasks handling made easy and elegant. It uses internally [Q.js](https://github.com/kriskowal/q)
+The library uses a promise-based wrapper elegant and made easy way to manage async tasks. It uses internally [Q.js](https://github.com/kriskowal/q)
 
 The promise resolve/error object has the following members:
 
