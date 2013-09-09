@@ -24,7 +24,7 @@ For full API usage, you must create an account at [Bintray.com](https://bintray.
 
 When you get the account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
-# CLI usage
+# CLI
 
 Full support via command-line interface
 
@@ -70,11 +70,11 @@ repository.createPackage(myPackage)
 
 ## Constructor
 
-#### new Bintray (username, apiToken, subject[, repository])
+#### new Bintray ([username, apiToken, subject, repository])
 
 Creates a new Bintray instance for working with the API.
 
-The first three parameters are required
+Autentication is optional for some resources (see [documentation](https://bintray.com/docs/api.html))
 
 ```js
 var Bintray = require('bintray')
@@ -321,6 +321,7 @@ The promise resolve/error object has the following members:
 
 * `data` The HTTP response body or error message. It can be an object if it was served as application/json mime type
 * `code` The HTTP response status code
+* `status` The HTTP status string
 * `response` The HTTP native response object
 
 
