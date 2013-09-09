@@ -1,22 +1,23 @@
 assert = require 'assert'
 _ = require 'lodash'
 Bintray = require '../'
-config = require './config.json'
 
-username = config.username
-token = config.apiToken
-subject = config.subject
-client = config.client
+username = 'username'
+apikey = 'apikey'
+subject = 'organization'
+repository = 'repo'
 
-client = new Bintray username, token, subject, client
+Bintray.apiBaseUrl = 'http://localhost:8882';
+
+client = new Bintray username, apikey, subject, repository
 
 describe 'Packages:', ->
 
   it 'should register a new package properly', (done) ->
     client.createPackage({
-      name: 'node'
-      desc: 'Node.js event-based server-side javascript engine'
-      labels: [ 'JavaScript', 'Server-side', 'Node.js' ]
+      name: 'my-package'
+      desc: 'My package description'
+      labels: [ 'JavaScript', 'Package' ]
       licenses: [ 'MIT' ]
     })
       .then (response) ->
@@ -32,6 +33,7 @@ describe 'Packages:', ->
             assert.deepEqual _.find(response.data, { 'name': 'node' }), { name: 'node', linked: false }
             done()
           , (error) ->
+            console.log(error.code)
             done error.data
 
   it 'should update package information', (done) -> 

@@ -34,7 +34,7 @@ module.exports = class Bintray
     return @rest.get endpoint
 
   getPackages: (start = 0, startName) -> 
-    endpoint = "/repos/#{@endpointBase}/packages?start_pos=#{start}" + (if startName then "&start_name=" + startName else '')
+    endpoint = "/repos/#{@endpointBase}/packages?start_pos=#{start}" + (if startName then "&start_name=" + startName else "")
     return @rest.get endpoint
 
   getPackage: (name) -> 
@@ -120,11 +120,12 @@ module.exports = class Bintray
     return @rest.del endpoint
 
   searchRepository: (name, descendant = false) -> 
-    endpoint = "/search/repos?name=#{name}" + (if descendant then "desc=1")
+    endpoint = "/search/repos?name=#{name}" + (if descendant then "desc=1" else "")
     return @rest.get endpoint
 
   searchPackage:  (name, descendant = false, subject = @subject, repository = @repository) ->
-    endpoint = "/search/packages?name=#{name}" + (if descendant then "desc=1") + "&subject=#{subject}&repo=#{repository}"
+    endpoint = "/search/packages?name=#{name}" + (if descendant then "desc=1" else "")
+    endpoint += "&subject=#{subject}&repo=#{repository}" if subject and repository
     return @rest.get endpoint
 
   searchUser: (name) -> 
@@ -158,7 +159,7 @@ module.exports = class Bintray
     return @rest.get endpoint
 
   uploadPackage: (name, version, filePath, remotePath = '/', publish = true, explode = false, mimeType = "application/octet-stream") -> 
-    endpoint = "/content/#{@endpointBase}/#{name}/#{version}/#{remotePath}" + (if publish then ";publish=1") + (if explode then ";explode=1")
+    endpoint = "/content/#{@endpointBase}/#{name}/#{version}/#{remotePath}" + (if publish then ";publish=1" else "") + (if explode then ";explode=1" else "")
     return @rest.put endpoint, {
       multipart: true
       data: 
@@ -173,7 +174,7 @@ module.exports = class Bintray
     }
 
   mavenUpload: (name, version, filePath, remotePath = '/', publish = true, explode = false, mimeType = "application/octet-stream") -> 
-    endpoint = "/maven/#{@endpointBase}/#{name}/#{remotePath}" + (if publish then ";publish=1") + (if explode then ";explode=1")
+    endpoint = "/maven/#{@endpointBase}/#{name}/#{remotePath}" + (if publish then ";publish=1" else "") + (if explode then ";explode=1" else "")
     return @rest.put endpoint, {
       multipart: true
       data: 
@@ -202,11 +203,11 @@ module.exports = class Bintray
     return @rest.del endpoint
 
   singFile: (remotePath, passphrase) ->
-    endpoint = "/gpg/@{@endpointBase}/#{remotePath}" + (if passphrase then "?passphrase=#{passphrase}" else '')
+    endpoint = "/gpg/@{@endpointBase}/#{remotePath}" + (if passphrase then "?passphrase=#{passphrase}" else "")
     return @rest.post endpoint
 
   singVersion: (pkgname, version, passphrase) ->
-    endpoint = "/gpg/@{@endpointBase}/#{pkgname}/versions/#{version}" + (if passphrase then "?passphrase=#{passphrase}" else '')
+    endpoint = "/gpg/@{@endpointBase}/#{pkgname}/versions/#{version}" + (if passphrase then "?passphrase=#{passphrase}" else "")
     return @rest.post endpoint
 
   getRateLimit: ->

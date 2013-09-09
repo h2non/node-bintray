@@ -1,10 +1,13 @@
 Q = require 'q'
 _ = require 'lodash'
 rest = require 'restler'
+status = require './status'
 
 promiseResponse = (response, data) ->
+  code = response.statusCode
   return {
-    code: response.statusCode
+    code: code
+    status: status[code]
     response: response
     data: data
   }
@@ -24,7 +27,7 @@ module.exports = class Rest
   constructor: (options) -> 
     @baseUrl = options.baseUrl
     _.extend @options, _.omit options, 'baseUrl' if options.username
-  
+
   getRateLimit: (response) ->
     headers = response.headers
     
@@ -44,12 +47,11 @@ module.exports = class Rest
           response.statusCode = 300
           deferred.reject promiseResponse response, 'You have exceeded your API call limit'
         else if result instanceof Error 
-          deferred.reject promiseResponse response, result
+          deferred.reject promiseResponse response, reponse.raw
         else if response.statusCode >= 300
           deferred.reject promiseResponse response, result
         else
           deferred.resolve promiseResponse response, result
-
       ###
       .on 'error', (err, response) ->
         console.log(err)
@@ -61,32 +63,32 @@ module.exports = class Rest
   setAuth: (username, password) ->
     _.extend @options, { username: username, password: password }
 
-  get: (path) ->
-    return @wrapResponse rest.get(@baseUrl + path, {
-      headers: @options.headers
-    })
+  get: (path, options) ->
+    options = _.extend {}, @options, options if options
+
+    return @wrapResponse rest.get @baseUrl + path, options || @options
 
   post: (path, options) -> 
     options = _.extend {}, @options, options
     
-    return @wrapResponse rest.post(@baseUrl + path, options)
+    return @wrapResponse rest.post @baseUrl + path, options
 
   put: (path, options) ->
     options = _.extend {}, @options, options
 
-    return @wrapResponse rest.put(@baseUrl + path, options)
+    return @wrapResponse rest.put @baseUrl + path, options
 
   del: (path, options) -> 
     options = _.extend {}, @options, options
 
-    return @wrapResponse rest.del(@baseUrl + path, options)
+    return @wrapResponse rest.del @baseUrl + path, options
 
   head: (path, options) -> 
     options = _.extend {}, @options, options
 
-    return @wrapResponse rest.head(@baseUrl + path, options)
+    return @wrapResponse rest.head @baseUrl + path, options
 
   patch: (path, options) -> 
     options = _.extend {}, @options, options
 
-    return @wrapResponse rest.patch(@baseUrl + path, options)
+    return @wrapResponse rest.patch @baseUrl + path, options

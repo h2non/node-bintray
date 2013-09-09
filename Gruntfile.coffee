@@ -3,6 +3,7 @@ module.exports = (grunt) ->
    grunt.loadNpmTasks 'grunt-contrib-coffee'
    grunt.loadNpmTasks 'grunt-contrib-watch'
    grunt.loadNpmTasks 'grunt-mocha-cli'
+   grunt.loadNpmTasks 'grunt-stubby'
 
    grunt.initConfig
       pkg: grunt.file.readJSON 'package.json'
@@ -12,6 +13,12 @@ module.exports = (grunt) ->
           timeout: 50000
           compilers: ['coffee:coffee-script']
         all: 'test/**/*.coffee'
+
+      stubby: 
+        bintray: 
+          files: [{
+            src: [ 'test/mocks/*.json' ]
+          }]      
 
       coffee:
         src:
@@ -29,5 +36,5 @@ module.exports = (grunt) ->
           tasks: [ 'coffee:src', 'test' ]
 
    grunt.registerTask 'default', ['coffee', 'mochacli']
-   grunt.registerTask 'test', ['mochacli']
+   grunt.registerTask 'test', ['stubby', 'mochacli']
    grunt.registerTask 'compile', ['coffee']

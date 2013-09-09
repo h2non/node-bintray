@@ -1,13 +1,13 @@
 assert = require 'assert'
+_ = require 'lodash'
 Bintray = require '../'
-config = require './config.json'
 
-username = config.username
-token = config.apiToken
-subject = config.subject
-client = config.client
+username = 'username'
+apikey = 'apikey'
+subject = 'organization'
+repository = 'repo'
 
-client = new Bintray username, token, subject, client
+client = new Bintray username, apikey, subject, repository
 
 describe 'Uploads:', ->
 

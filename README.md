@@ -6,6 +6,14 @@ A [Bintray](https://bintray.com) CLI and Node.js API client for easy package man
 
 # Installation
 
+For CLI usage, is preferably you install the package globally
+
+```shell
+$ npm install bintray -g
+```
+
+Otherwise for JavaScript API usage, you should install it locally
+
 ```shell
 $ npm install bintray --save
 ```
@@ -14,9 +22,23 @@ $ npm install bintray --save
 
 For full API usage, you must create an account at [Bintray.com](https://bintray.com)
 
-When you get an account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
+When you get the account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
-# Example usage
+# CLI
+
+Full supported
+
+```shell
+$ bintray -h
+```
+
+# Pragmatic API
+
+The current implementation only supports the REST API version `1.0`
+
+For more information about the current API stage, see the [Bintray API documentation](https://bintray.com/docs/api.html)
+
+## Example usage
 
 ```js
 
@@ -45,12 +67,6 @@ repository.createPackage(myPackage)
   });
 
 ```
-
-# API
-
-The current implementation only supports the REST API version `1.0`
-
-For more information about the current API stage, see the [Bintray API documentation](https://bintray.com/docs/api.html)
 
 ## Constructor
 
@@ -322,17 +338,13 @@ Install dependencies
 $ npm install
 ```
 
-Configure the JSON file for real testing
-
-```shell
-$ echo '{ "username": "<yourUsername>", "apiToken": "<yourApiToken>", "subject": "myName", "repository": "testing" }' > test/config.json
-```
-
 Compile and test (you should have installed grunt-cli as global package)
 
 ```shell
 $ npm test
 ```
+
+Add mock test cases in test/mocks/ like JSON data collection
 
 # Changelog
 
@@ -342,9 +354,9 @@ $ npm test
 # TODO
 
 * Better error handling
+* Download progress (chunk event data)
 * More tests (webhooks & searchs)
 * Code usage examples
-* CLI support
 
 # License
 
