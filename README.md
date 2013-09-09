@@ -1,6 +1,6 @@
 # Node Bintray
 
-A [Bintray](https://bintray.com) CLI and Node.js API client for easy package management (written in CoffeeScript)
+[Bintray](https://bintray.com) CLI and Node.js client package manager (written in CoffeeScript) 
 
 ## JUST FOR TESTING, WORK IN PROGRESS!
 

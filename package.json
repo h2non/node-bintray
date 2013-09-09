@@ -1,7 +1,7 @@
 {
   "name": "bintray",
   "version": "0.1.0",
-  "description": "A Bintray CLI and node.js API client for an easy package management",
+  "description": "Bintray CLI and Node.js client package manager (written in CoffeeScript)",
   "preferGlobal": true,
   "author": {
     "name": "Tomas Aparicio",
