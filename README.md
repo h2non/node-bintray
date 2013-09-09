@@ -24,15 +24,15 @@ For full API usage, you must create an account at [Bintray.com](https://bintray.
 
 When you get the account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
-# CLI
+# CLI usage
 
-Full supported
+Full support via command-line interface
 
 ```shell
 $ bintray -h
 ```
 
-# Pragmatic API
+# Programmatic API
 
 The current implementation only supports the REST API version `1.0`
 
