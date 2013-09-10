@@ -10,7 +10,7 @@ repository = 'repo'
 client = new Bintray username, apikey, subject, repository
 
 describe 'Uploads:', ->
-
+  
   it 'should register a new package properly', (done) ->
     client.createPackage({
       name: 'beaker'

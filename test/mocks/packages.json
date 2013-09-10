@@ -30,7 +30,8 @@
     "request": {
       "url": "^/packages/organization/repo$", 
       "headers": {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
       },
       "method": "POST"
     },
@@ -59,6 +60,88 @@
         "updated": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
         "linked_to_repo": "the repo this package was linked to (relevant to search results)"
       }
+    }
+  },
+  {
+    "request": {
+      "url": "^/packages/organization/repo/my-package$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "PATCH"
+    },
+    "response": {
+      "status": 200, 
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "latency": 500,
+      "body": {
+        "desc": "My super package",
+        "labels": ["persistence", "database"],
+        "licenses": ["BSD"]
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "^/packages/organization/repo/my-package$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "GET"
+    },
+    "response": {
+      "status": 200, 
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "latency": 500,
+      "body": {
+        "name": "my-package",
+        "repo": "repo",
+        "owner": "user",
+        "desc": "My super package",
+        "labels": ["persistence", "database"],
+        "attribute_names": ["licenses", "vcs", "github"],
+        "rating": 8,
+        "rating_count": 8,
+        "followers_count": 82,
+        "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+        "versions": ["0.9", "1.0", "1.0.1"],
+        "latest_version": "1.2.5",
+        "updated": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+        "linked_to_repo": "the repo this package was linked to (relevant to search results)"
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "^/packages/organization/repo/(.*)$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "DELETE"
+    },
+    "response": {
+      "status": 200, 
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "latency": 500,
+      "body": { "status": "success" }
     }
   }
 ]

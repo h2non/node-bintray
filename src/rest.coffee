@@ -47,7 +47,7 @@ module.exports = class Rest
           response.statusCode = 300
           deferred.reject promiseResponse response, 'You have exceeded your API call limit'
         else if result instanceof Error 
-          deferred.reject promiseResponse response, reponse.raw
+          deferred.reject promiseResponse response, response.raw
         else if response.statusCode >= 300
           deferred.reject promiseResponse response, result
         else
