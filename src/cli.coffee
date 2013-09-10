@@ -4,8 +4,7 @@ auth = require './auth'
 common = require './common'
 pkg = require '../package.json'
 
-log = common.log
-die = common.die
+{ log, die } = common
 exit = 0
 
 program

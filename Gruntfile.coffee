@@ -18,7 +18,7 @@ module.exports = (grunt) ->
         bintray: 
           files: [{
             src: [ 'test/mocks/*.json' ]
-          }]      
+          }]
 
       coffee:
         src:

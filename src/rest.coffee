@@ -52,11 +52,6 @@ module.exports = class Rest
           deferred.reject promiseResponse response, result
         else
           deferred.resolve promiseResponse response, result
-      ###
-      .on 'error', (err, response) ->
-        console.log(err)
-        deferred.reject promiseResponse response, err
-      ###
 
     return deferred.promise
 
