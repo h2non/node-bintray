@@ -1,32 +1,35 @@
-fs = require "fs" 
+_ = require "lodash"
 Rest = require "./rest"
+common = require "./common"
 sendFile = require("restler").file
-
-getFileSize = (path) ->
-  fs.statSync(path).size
 
 module.exports = class Bintray
 
   @apiBaseUrl = "https://api.bintray.com"
   @apiVersion = "1.0"
+  
+  config:
+    debug: false
+    baseUrl: Bintray.apiBaseUrl
 
-  constructor: (username, apiToken, subject, repository) -> 
+  constructor: (options = {}) ->
+    @rest = new Rest _.extend @config, _.assign options, { password: options.apikey }
+    { @organization, @repository } = @config
+    @endpointBase = "#{@organization}/#{@repository}" if @organization and @repository
 
-    @rest = new Rest { baseUrl: Bintray.apiBaseUrl, username: username, password: apiToken }
-    @subject = subject
-    @repository = repository
-    @endpointBase = "#{subject}/#{repository}"
+  setEndpointBase: ->
+    @endpointBase = "#{@organization}/#{@repository}"
 
   selectRepository: (repository) -> 
     @repository = repository
-    @endpointBase = "#{@subject}/#{@repository}"
+    @setEndpointBase()
 
-  selectSubject: (subject) ->
-    @subject = subject
-    @endpointBase = "#{@subject}/#{@repository}"
+  selectOrganization: (organization) ->
+    @organization = organization
+    @setEndpointBase()
 
   getRepositories: -> 
-    endpoint = "/repos/#{@subject}"
+    endpoint = "/repos/#{@organization}"
     return @rest.get endpoint
 
   getRepository: ->
@@ -123,9 +126,9 @@ module.exports = class Bintray
     endpoint = "/search/repos?name=#{name}" + (if descendant then "desc=1" else "")
     return @rest.get endpoint
 
-  searchPackage:  (name, descendant = false, subject = @subject, repository = @repository) ->
+  searchPackage:  (name, descendant = false, organization = @organization, repository = @repository) ->
     endpoint = "/search/packages?name=#{name}" + (if descendant then "desc=1" else "")
-    endpoint += "&subject=#{subject}&repo=#{repository}" if subject and repository
+    endpoint += "&organization=#{organization}&repo=#{repository}" if organization and repository
     return @rest.get endpoint
 
   searchUser: (name) -> 
@@ -164,7 +167,7 @@ module.exports = class Bintray
       multipart: true
       data: 
         "package[message]": "Package upload: #{name} (#{version})"
-        "package[file]": sendFile filePath, null, getFileSize(filePath), null, mimeType
+        "package[file]": sendFile filePath, null, common.getFileSize(filePath), null, mimeType
     }
 
   publishPackage: (name, version, discard = false) -> 
@@ -179,11 +182,11 @@ module.exports = class Bintray
       multipart: true
       data: 
         "package[message]": "Maven package upload: #{name} (#{version})"
-        "package[file]": sendFile filePath, null, getFileSize(filePath), null, mimeType
+        "package[file]": sendFile filePath, null, common.getFileSize(filePath), null, mimeType
     }
 
   getWebhooks: (repository = '') -> 
-    endpoint = "/webhooks/#{@subject}/#{repository}"
+    endpoint = "/webhooks/#{@organization}/#{repository}"
     return @rest.get endpoint
 
   createWebhook: (pkgname, configObj) -> 
@@ -194,7 +197,14 @@ module.exports = class Bintray
 
   testWebhook: (pkgname, version, configObj) -> 
     endpoint = "/webhooks/#{@endpointBase}/#{pkgname}/#{version}"
+    hmac = require("crypto").createHmac("md5", @config.password).digest("hex");
+
     return @rest.post endpoint, {
+      headers: {
+        'Content-Type': 'application/json'
+        'User-Agent': 'Node.js Bintray client',
+        'X-Bintray-WebHook-Hmac': hmac
+      },
       data: JSON.stringify configOBj
     }
 

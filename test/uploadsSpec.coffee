@@ -4,13 +4,15 @@ Bintray = require '../'
 
 username = 'username'
 apikey = 'apikey'
-subject = 'organization'
+organization = 'organization'
 repository = 'repo'
 
-client = new Bintray username, apikey, subject, repository
+Bintray.apiBaseUrl = 'http://localhost:8882'
+
+client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository }
 
 describe 'Uploads:', ->
-  
+
   it 'should register a new package properly', (done) ->
     client.createPackage({
       name: 'beaker'

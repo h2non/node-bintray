@@ -44,7 +44,7 @@ For more information about the current API stage, see the [Bintray API documenta
 
 var Bintray = require('bintray');
 
-var repository = new Bintray('username', 'apiToken', 'my-packages', 'stable')
+var repository = new Bintray({ username: 'username', apikey: 'apiKeyToken', organization: 'my-packages', repository: 'stable' });
 
 var myPackage = {
     name: 'node',
@@ -70,7 +70,7 @@ repository.createPackage(myPackage)
 
 ## Constructor
 
-#### new Bintray ([username, apiToken, subject, repository])
+#### new Bintray (options<Object>)
 
 Creates a new Bintray instance for working with the API.
 

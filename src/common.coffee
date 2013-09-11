@@ -3,6 +3,9 @@ path = require 'path'
 
 module.exports = class 
 
+  @getFileSize: (path) =>
+    fs.statSync(path).size
+
   @readFile: (filepath) =>
     data = fs.readFileSync path.resolve(filepath)
     

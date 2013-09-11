@@ -1,14 +1,15 @@
+_ = require 'lodash'
 program = require 'commander'
 Bintray = require '../lib/bintray'
 auth = require './auth'
 common = require './common'
 pkg = require '../package.json'
 
-{ log, die } = common
+{ log, die, error } = common
 exit = 0
 
 program
-  .version pkg.version
+  .version(pkg.version)
 
 program.on '--help', ->
   log """
@@ -30,7 +31,7 @@ program
   .option('-k, --apikey <apikey>', 'User API key')
   .on('--help', ->
     log """
-      Auth usage examples:
+      Usage examples:
 
         $ bintray auth -u myuser -k myapikey
         $ bintray auth --show
@@ -67,6 +68,7 @@ program
         log 'Both username and apikey params are required'.red
         exit = 1
       else
+        log 'Authentication data saved'.green
         auth.save options.username, options.apikey
         log 'Authentication data saved'.green
 
@@ -74,14 +76,16 @@ program
 # Packages management
 #
 program
-  .command('package <subject> <repository> <action> [pkgname] [pkgfile]')
+  .command('package <organization> <repository> <action> [pkgname] [pkgfile]')
   .description('Get, update, delete or create Bintray packages')
-  .usage('<subject> <repository> <list|info|create|delete|update> [pkgname] [pkgfile]?')
-  #.option('-o, --organization <subject>', 'Bintray organization name')
+  .usage('<organization> <repository> <list|info|create|delete|update> [pkgname] [pkgfile]?')
   .option('-f, --file [path]', '[create|update] Path to JSON manifest file')
   .option('-s, --start-pos [number]', '[list] Packages list start position')
   .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
   .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
       Usage examples:
@@ -90,22 +94,21 @@ program
         $ bintray package myorganization myrepository info mypackage
     """
   )
-  .action (subject, repository, action, pkgname, pkgfile, options) ->
+  .action (organization, repository, action, pkgname, pkgfile, options) ->
     actions = [ 'list', 'info', 'create', 'delete', 'update' ]
     action = action.toLowerCase()
 
-    if !subject or !repository
-      log 'Subject and repository command required. Type --help'.red
+    if !organization or !repository
+      log 'organization and repository command required. Type --help'.red
       die 1
 
-    if actions.indexOf(action) isnt -1
-      log 'Invalid action. Type --help'.red
-      die 1
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
 
-    authStore = auth.get()
-    client = new Bintray authStore.username, authStore.apikey, subject, repository if authStore
-    client = new Bintray if !authStore
-    
+    if username? and apikey?
+      client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, debug: options.debug }
+    else
+      client = new Bintray { debug: options.debug }
+
     switch action
       when 'list'
         # no auth
@@ -113,16 +116,16 @@ program
 
         client.getPackages(options.startPos, options.startName)
           .then (response) ->
-            response = response.data
-            if response.length
-              if options.raw
-                log response
-              else
-                log 'Available packages at "', repository, '" repository'
-                response.forEach (pkg) ->
-                  log pkg.name
+            { data } = response
+            if options.raw
+              log JSON.stringify data
             else
-              log 'No packages found'.red
+              if data.length
+                log "Available packages at '#{repository}' repository:".grey
+                data.forEach (pkg) ->
+                  log pkg.name
+              else
+                log 'Packages not found'.red
           , (error) -> 
             if error.code is 404
               log 'Repository not found'.red
@@ -138,15 +141,14 @@ program
 
         client.getPackage(pkgname)
           .then (response) ->
-            pkg = response.data
-            if pkg? and pkg.name
-              if options.raw
-                log pkg
-              else 
-                log '%s %s [%s/%s] %s', pkg.name, pkg.latest_version or '(no version)', pkg.owner, pkg.repo, pkg.desc
+            { data } = response
+            if options.raw
+              log JSON.stringify data
             else
-              log 'No package found'.red
-            
+              if data? and data.name
+                log '%s %s [%s/%s] %s', data.name, data.latest_version or '(no version)', data.owner, data.repo, data.desc
+              else
+                log 'Package not found'.red
           , (error) -> 
             if error.code is 404
               log 'Package not found'.red
@@ -235,6 +237,10 @@ program
               log 'Error while trying to get the resource, server code:'.red, error.code or error
             exit = 1
 
+      else
+        log "Invalid '#{action}' action. Type --help".red
+        die 1
+
 #
 # Search 
 #
@@ -246,13 +252,14 @@ program
   .option('-o, --organization <name>', '[packages|attributes] Search only packages for the given organization')
   .option('-r, --repository <name>', '[packages|attributes] Search only packages for the given repository (requires -o param)')
   .option('-f, --filter <value>', '[attributes] Attribute filter rule string or JSON file path with filters')
-  .option('-u, --username <username>', 'Defined the authentication username')
   .option('-p, --pkgname <package>', '[attributes] Search attributes on a specific package')
+  .option('-u, --username <username>', 'Defines the authentication username')
   .option('-k, --apikey <apikey>', 'Defines the authentication API key')
   .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
-      Search usage examples:
+      Usage examples:
 
         $ bintray search user john
         $ bintray search package node.js -o myOrganization
@@ -262,54 +269,57 @@ program
   )
   .action (type, query, options) ->
 
-    if not auth.exists() and !options.user? and !options.apikey?
+    if not auth.exists() and !options.username? and !options.apikey?
       log "Authentication credentials required. Type --help for more information".red
       die 1
 
-    { username, apikey } = auth.get() or options
-    
-    client = new Bintray username, apikey, options.organization, options.repository
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
 
+    client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, debug: options.debug }
+    
     switch type
 
       when 'package'
         client.searchPackage(query, options.desc)
           .then (response) ->
-                if not response.data.length
-                  log "No package found!"
-                else
-                  if options.raw 
-                    log response.raw
-                  else
-                    response.data.forEach (pkg) -> 
-                      log pkg.name.white, "(#{pkg.latest_version}) [#{pkg.repo}, #{pkg.owner}] #{pkg.desc.green}"
-              , common.error
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if not data.length
+                log "Package not found!"              
+              else
+                data.forEach (pkg) -> 
+                  log pkg.name.white, "(#{pkg.latest_version}) [#{pkg.repo}, #{pkg.owner}] #{pkg.desc.green}"
+          , error
 
       when 'repository'
         client.searchRepositories(query, options.desc)
           .then (response) ->
-                if not response.data.length
-                  log "No repository found!"
-                else
-                  if options.raw 
-                    log response.raw
-                  else
-                    response.data.forEach (repo) -> 
-                      log repo.name.white, "(#{repo.package_count} packages) [#{repo.owner}] #{repo.desc.green} (#{repo.labels.join(', ')})"
-              , common.error
+            { data } = response
+            if not data.length
+              log "Repository not found!"
+            else
+              if options.raw 
+                log JSON.stringify data
+              else
+                data.forEach (repo) -> 
+                  log repo.name.white, "(#{repo.package_count} packages) [#{repo.owner}] #{repo.desc.green} (#{repo.labels.join(', ')})"
+          , error
 
       when 'user'
         client.searchUser(query)
           .then (response) ->
-                if not response.data.length
-                  log "No user found!"
-                else
-                  if options.raw 
-                    log response.raw
-                  else
-                    response.data.forEach (user) -> 
-                      log repo.name.white, "(#{Math.round(user.quota_used_bytes / 1024 / 1024)} MB) [#{user.organizations.join(', ')}] [#{user.repos.join(', ')}] (#{user.followers_count} followers)"
-              , common.error
+            { data } = response
+            if not data.length
+              log "User not found!"
+            else
+              if options.raw 
+                log JSON.stringify data
+              else
+                data.forEach (user) -> 
+                  log repo.name.white, "(#{Math.round(user.quota_used_bytes / 1024 / 1024)} MB) [#{user.organizations.join(', ')}] [#{user.repos.join(', ') || 'No repositories'}] (#{user.followers_count} followers)"
+          , error
 
       when 'attribute'
         if query.indexOf('/') isnt -1
@@ -322,18 +332,259 @@ program
 
         client.searchAttributes(query, options.pkgname)
           .then (response) ->
-                if not response.data.length
-                  log "No packages found!"
-                else
-                  if options.raw 
-                    log response.raw
-                  else
-                    response.data.forEach (pkg) -> 
-                      log pkg.name.white, "(#{pkg.latest_version}) [#{pkg.repo}, #{pkg.owner}] #{pkg.desc.green}"
-              , common.error
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if not data.length
+                log "Packages not found!"
+              else
+                data.forEach (pkg) -> 
+                  log pkg.name.white, "(#{pkg.latest_version}) [#{pkg.repo}, #{pkg.owner}] #{pkg.desc.green}"
+          , error
 
       else 
         log "Invalid search mode. Type --help for more information".red
+        die 1
+
+#
+# Repositories
+#
+program
+  .command('repositories <organization> [repository]')
+  .description('Get information about one or more repositories. Authentication is optional')
+  .usage('<organization> [repository]')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
+  .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .on('--help', ->
+    log """
+      Usage examples:
+
+        $ bintray repositories organizationName
+        $ bintray repositories organizationName repoName
+
+    """
+  )
+  .action (organization, repository, options) ->
+
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
+
+    if username? and apikey?
+      client = new Bintray { username: username, apikey: apikey, organization: organization, debug: options.debug }
+    else
+      client = new Bintray { debug: options.debug }
+
+    client.selectOrganization organization if not client.organization
+
+    if repository?
+      client.getRepository(repository)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if not data.length
+                log "Repository not found!"
+              else
+                response.data.forEach (repo) -> 
+                  log repo.name.white, "(#{repo.package_count} packages) [#{repo.owner}] #{repo.desc.green} - #{repo.labels.join(', ')}"
+          , error
+    else
+      client.getRepositories()
+          .then (response) ->
+            { data } = response
+            if options.raw
+                log JSON.stringify data
+            else
+              if not data
+                log "No repositories found!"
+              else
+                data.forEach (repo) -> 
+                  log repo.name.white, "[#{repo.owner}]"
+          , error
+
+#
+# Users
+#
+program
+  .command('user <username> [action]')
+  .description('Get information about a user. Authentication is required')
+  .usage('<username> [action]')
+  .option('-s, --start-pos [number]', 'Followers list start position')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
+  .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .on('--help', ->
+    log """
+      Usage examples:
+
+        $ bintray user john
+        $ bintray user john followers -s 1
+
+    """
+  )
+  .action (username, action, options) ->
+
+    if not auth.exists() and !options.username? and !options.apikey?
+      log "Authentication credentials required. Type --help for more information".red
+      die 1
+
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
+
+    client = new Bintray { username: username, apikey: apikey, debug: options.debug }
+
+    if action
+      client.getUserFollowers(username, options.startPos)
+          .then (response) ->
+            { data } = response
+            if options.raw
+              log JSON.stringify data
+            else
+              if not data.length
+                log "The user has no followers!"
+              else
+                data.forEach (follower) -> 
+                  log follower.name.white
+          , error
+    else
+      client.getUser(username)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if not data
+                log "User not found!"              
+              else
+                log data.name.white, "(#{Math.round(user.quota_used_bytes / 1024 / 1024)} MB) [#{user.organizations.join(', ')}] [#{user.repos.join(', ') || 'No repositories'}] (#{user.followers_count} followers)"
+          , error
+
+#
+# Webbooks
+#
+program
+  .command('webhook <action> <organization> [repository] [pkgname]')
+  .description('Manage webhooks. Authentication is required')
+  .usage('<list|create|test|delete> <organization> [respository] [pkgname]')
+  .option('-w, --url <url>', 'Callback URL. May contain the %r and %p tokens for repo and package name')
+  .option('-m, --method <method>', 'HTTP request method for the callback URL. Defaults to POST')
+  .option('-n, --version <version>', 'Use a specific package version')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
+  .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .on('--help', ->
+    log """
+      Usage examples:
+
+        $ bintray webhook get myrepository
+        $ bintray webhook create myrepository mypackage -w 'http://callbacks.myci.org/%r-%p-build' -m 'GET'
+        $ bintray webhook test myrepository mypackage -n '0.1.0'
+
+    """
+  )
+  .action (action, organization, repository, pkgname, options) ->
+
+    if not auth.exists() and !options.username? and !options.apikey?
+      log "Authentication credentials required. Type --help for more information".red
+      die 1
+
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
+
+    client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, debug: options.debug }
+
+    switch action
+
+      when 'list'
+
+        client.getWebhooks(repository)
+            .then (response) ->
+              { data } = response
+              if options.raw
+                log JSON.stringify data
+              else
+                if not data.length
+                  log "The organization/repository has no webhooks!"
+                else
+                  data.forEach (hook) -> 
+                    log hook['package'].white, "(failure count: #{hook.failure_count}) [#{hook.url}]"
+            , error
+
+      when 'create'
+
+        if not pkgname
+          log "Package name param required. Type --help for more information".red
+          die 1
+        if not repository
+          log "Repository param required. Type --help for more information".red
+          die 1
+        if not options.url
+          log "Url param required. Type --help for more information".red
+          die 1   
+
+        client.createWebhook(pkgname, _.pick(options, 'url', 'method'))
+            .then (response) ->
+              if options.raw
+                log JSON.stringify response.code + ' ' + response.status
+              else
+                if response.code isnt 201
+                  error response
+                else
+                  log "Webhook created successfully for '#{organization}/#{repository}/#{pkgname}'".green
+            , error
+
+      when 'test'
+
+        if not pkgname
+          log "Package name param required. Type --help for more information".red
+          die 1
+        if not repository
+          log "Repository param required. Type --help for more information".red
+          die 1
+        if not options.url
+          log "Url param required. Type --help for more information".red
+          die 1
+        if not options.version
+          log "Version param required. Type --help for more information".red
+          die 1
+
+        client.testWebhook(pkgname, options.version, _.pick(options, 'url', 'method'))
+            .then (response) ->
+              if options.raw
+                log JSON.stringify response.code + ' ' + response.status
+              else
+                if response.code isnt 201
+                  error response
+                else
+                  log "Webhook created successfully for '#{organization}/#{repository}/#{pkgname}'".green
+            , error
+
+
+      when 'delete'
+
+        if not pkgname
+          log "Package name param required. Type --help for more information".red
+          die 1
+        if not repository
+          log "Repository param required. Type --help for more information".red
+          die 1
+
+        client.deleteWebhook(pkgname)
+            .then (response) ->
+              if options.raw
+                log JSON.stringify response.code + ' ' + response.status
+              else
+                if response.code isnt 200
+                  error response
+                else
+                  log "Webhook deleted successfully for '#{organization}/#{repository}/#{pkgname}'".green
+            , error
+
+      else
+        log "Invalid '#{action}' action param. Type --help for more information".red
         die 1
 
 

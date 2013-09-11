@@ -4,7 +4,7 @@ module.exports = class
 
   @credentials: null
   
-  @store: '#{__dirname}/../../data/auth.json'
+  @store: '#{__dirname}/../data/auth.json'
 
   @get: => 
     if @exists() and @credentials?
@@ -13,7 +13,7 @@ module.exports = class
       return false
 
   @save: (username, apikey) =>
-     fs.writeFileSync @store, JSON.stringify({ username: username, apikey: apikey }, null, 2) if username?
+    fs.writeFileSync @store, JSON.stringify({ username: username, apikey: apikey }, null, 2) if username? and apikey?
 
   @exists: => 
     fs.existsSync @store
