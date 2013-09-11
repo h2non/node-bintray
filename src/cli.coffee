@@ -13,7 +13,7 @@ program
 
 program.on '--help', ->
   log """
-    Examples:
+      Examples:
       
       $ bintray auth set -u username -k apikey
   """
@@ -31,7 +31,7 @@ program
   .option('-k, --apikey <apikey>', 'User API key')
   .on('--help', ->
     log """
-      Usage examples:
+        Usage examples:
 
         $ bintray auth -u myuser -k myapikey
         $ bintray auth --show
@@ -88,7 +88,7 @@ program
   .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
-      Usage examples:
+        Usage examples:
     
         $ bintray package myorganization myrepository list
         $ bintray package myorganization myrepository info mypackage
@@ -259,7 +259,7 @@ program
   .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
-      Usage examples:
+        Usage examples:
 
         $ bintray search user john
         $ bintray search package node.js -o myOrganization
@@ -360,7 +360,7 @@ program
   .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
-      Usage examples:
+        Usage examples:
 
         $ bintray repositories organizationName
         $ bintray repositories organizationName repoName
@@ -419,7 +419,7 @@ program
   .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
-      Usage examples:
+        Usage examples:
 
         $ bintray user john
         $ bintray user john followers -s 1
@@ -478,11 +478,12 @@ program
   .option('-d, --debug', 'Enables the verbose/debug output mode')
   .on('--help', ->
     log """
-      Usage examples:
+        Usage examples:
 
-        $ bintray webhook get myrepository
-        $ bintray webhook create myrepository mypackage -w 'http://callbacks.myci.org/%r-%p-build' -m 'GET'
-        $ bintray webhook test myrepository mypackage -n '0.1.0'
+        $ bintray webhook list myorganization myrepository
+        $ bintray webhook create myorganization myrepository mypackage -w 'http://callbacks.myci.org/%r-%p-build' -m 'GET'
+        $ bintray webhook test myorganization myrepository mypackage -n '0.1.0'
+        $ bintray webhook delete myorganization myrepository mypackage
 
     """
   )
@@ -587,6 +588,65 @@ program
         log "Invalid '#{action}' action param. Type --help for more information".red
         die 1
 
+#
+# GPG signing
+#
+program
+  .command('sign <organization> <repository> <pkgname> <passphrase>')
+  .description('Sign files and packages versions with GPG. Authentication is required')
+  .usage('<organization> <repository> <pkgname> <passphrase>')
+  .option('-n, --version <version>', 'Defines a specific package version')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
+  .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .on('--help', ->
+    log """
+        Usage examples:
+
+        $ bintray sign myorganization myrepository mypackage mypassphrasevalue -n 0.1.0
+        $ bintray sign myorganization myrepository /my/file/path.tag.gz mypassphrasevalue
+
+    """
+  )
+  .action (organization, repository, pkgname, passphrase, options) ->
+
+    if not auth.exists() and !options.username? and !options.apikey?
+      log "Authentication credentials required. Type --help for more information".red
+      die 1
+
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
+
+    client = new Bintray { username: username, apikey: apikey, debug: options.debug }
+
+    if pgkname.indexOf '/' isnt -1
+      client.singFile(pkgname, passphrase)
+          .then (response) ->
+            { data } = response
+            if options.raw
+              log JSON.stringify data
+            else
+              if response.code isnt 200
+                error response
+              else
+                log "File signed successfully".green
+          , error
+    else
+      if not options.version
+        log "Version param required. Type --help for more information".red
+        die 1
+
+      client.singVersion(pkgname, op)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if response.code isnt 200
+                error response
+              else
+                log "File signed successfully".green
+          , error
 
 process.on 'exit', -> process.exit exit
 
