@@ -1,15 +1,21 @@
 [
   {
     "request": {
-      "url": "^/content/organization/repo/beaker/0.1.0/releases/file/path$", 
+      "url": "^/packages/organization/repo/my-package/versions$", 
       "headers": {
         "Content-Type": "application/json",
         "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
       },
-      "method": "PUT"
+      "method": "POST",
+      "body": {
+        "name": "1.1.5",
+        "release_notes": "This new version fixes...",
+        "release_url":"https://github.com/user/my-package/RB-1.1.5/README.md",
+        "released": "ISO8601 (yyyy-MM-ddTHH:mm:ss.SSSZ)"
+      }
     }, 
     "response": {
-      "status": 201, 
+      "status": 201,
       "headers": {
         "Content-Type": "application/json",
         "X-RangeLimit-Total": 0,
@@ -17,13 +23,17 @@
         "X-RateLimit-Remaining": 250
       },
       "latency": 500,
-      "body": [{
-        "name": "my-package1",
-        "linked": false
-      }, {
-        "name": "my-package2",
-        "linked": true
-      }]
+      "body": {
+        "name": "1.1.5",
+        "package": "my-package",
+        "repo": "repo",
+        "owner": "organization",
+        "release_notes": "This new version fixes...",
+        "release_url": "https://github.com/user/my-package/RB-1.1.5/README.md",
+        "attribute_names": ["licenses", "vcs", "github"],
+        "released": "ISO8601 (yyyy-MM-ddTHH:mm:ss.SSSZ)",
+        "ordinal": 5
+      }
     }
   }
 ]

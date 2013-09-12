@@ -21,40 +21,60 @@ describe 'Uploads:', ->
       licenses: [ 'MIT' ]
     })
       .then (response) ->
-            try
-              assert.equal response.code, 201
-              done()
-            catch e
-              done e
-          , (error) ->
-            done new Error error.data
+        try
+          assert.equal response.code, 201, 'HTTP status should be 201'
+          done()
+        catch e
+          done e
+      , (error) ->
+        done new Error error.data
 
   it 'should creates a new package version', (done) ->
     client.createPackageVersion('my-package', {
-      name: '0.1.0',
-      release_notes: 'First version',
-      release_url: 'http://en.wikipedia.org/wiki/Beaker_(Muppet)'
+      name: '1.1.5',
+      release_notes: 'This new version fixes...',
+      release_url: 'https://github.com/user/my-package/RB-1.1.5/README.md',
+      releades: 'ISO8601 (yyyy-MM-ddTHH:mm:ss.SSSZ)'
     })
       .then (response) ->
-            assert.equal response.statusCode, 201
+        try 
+          assert.equal response.code, 201, 'HTTP status should be 201'
+          done()
+        catch e
+          done e
+      , (error) ->
+        done new Error error.data
 
   it 'should upload the file properly', (done) ->
-    client.uploadPackage('beaker', '0.1.0', "#{__dirname}/fixtures/beaker.gz", '0.1.0/beaker/')
+    client.uploadPackage('my-package', '1.1.5', "#{__dirname}/fixtures/my-package.gz", 'packages/my-package/')
       .then (response) ->
-            client.getPackage('beaker')
-              .then (response) ->
-                    console.log release.data
-                    done()
-                  , (error) ->
-                    done error.data
-            console.log('status: ', response.code)
-          , (error) ->
-            done error.data
+        try 
+          assert.equal response.code, 201, 'HTTP status code should be 201'
+          done()
+        catch e
+          done e
+      , (error) ->
+        done new Error error.data
+
+  it 'should publish the file properly', (done) ->
+    client.publishPackage('my-package', '1.1.5', true)
+      .then (response) ->
+        try 
+          assert.equal response.code, 200, 'HTTP status should be 200'
+          assert.equal response.data.files, 39, 'Discarded files should be 39'
+          done()
+        catch e
+          done e
+      , (error) ->
+        done new Error error.data
 
   it 'should remove the package', (done) ->
-    client.deletePackage('beaker')
+    client.deletePackage('my-package')
       .then (response) ->
-            assert.equal response.code, 200
-            done()
-          , (error) ->
-            done error.data
+        try 
+          assert.equal response.code, 200
+          done()
+        catch e
+          done e
+      , (error) ->
+        done new Error error.data

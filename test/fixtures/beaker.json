@@ -1,6 +1,0 @@
-{
- "name": "my-package",
- "desc": "This is a test package...",
- "labels": ["persistence", "database"],
- "licenses": ["Apache-2.0", "GPL-3.0"]
-}

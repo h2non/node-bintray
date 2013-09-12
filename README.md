@@ -109,7 +109,7 @@ repository.createPackage(myPackage)
 
 ## Constructor
 
-#### new Bintray (options<Object>)
+#### new Bintray (options[Object])
 
 Creates a new Bintray instance for working with the API.
 
@@ -125,6 +125,15 @@ var myRepository = new Bintray({
   repository: 'stable' 
 });
 ```
+
+Available config options:
+
+* `username` [String] Bintray username
+* `apikey` [String] Bintray API key token
+* `organization` [String] Bintray organization or subject identifier
+* `repository` [String] Repository name to use
+* `debug` [Boolean] Enables de console verbose mode
+* `baseUrl` [String] REST API base URL (just for testing)
 
 You can get the current API version from the following static Object property
 

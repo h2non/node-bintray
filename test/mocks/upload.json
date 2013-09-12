@@ -1,9 +1,9 @@
 [
   {
     "request": {
-      "url": "^/content/organization/repo/beaker/0.1.0/releases/file/path$", 
+      "url": "^/content/organization/repo/my-package/1.1.5/packages/my-package/", 
       "headers": {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
       },
       "method": "PUT"
@@ -16,14 +16,33 @@
         "X-RateLimit-Limit": 300,
         "X-RateLimit-Remaining": 250
       },
+      "latency": 500
+    }
+  },
+  {
+    "request": {
+      "url": "^/content/organization/repo/my-package/1.1.5/publish$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "POST",
+      "body": {
+        "discard": true
+      }
+    }, 
+    "response": {
+      "status": 200, 
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
       "latency": 500,
-      "body": [{
-        "name": "my-package1",
-        "linked": false
-      }, {
-        "name": "my-package2",
-        "linked": true
-      }]
+      "body": {
+        "files": 39
+      }
     }
   }
 ]
