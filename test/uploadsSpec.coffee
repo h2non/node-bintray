@@ -7,36 +7,30 @@ apikey = 'apikey'
 organization = 'organization'
 repository = 'repo'
 
-Bintray.apiBaseUrl = 'http://localhost:8882'
+apiBaseUrl = 'http://localhost:8882'
 
-client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository }
+client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, baseUrl: apiBaseUrl }
 
 describe 'Uploads:', ->
 
   it 'should register a new package properly', (done) ->
     client.createPackage({
-      name: 'beaker'
-      desc: 'Another super package'
-      labels: [ 'beaker', 'muppets' ]
-      licenses: [ 'AGPL' ]
+      name: 'my-package'
+      desc: 'My package description'
+      labels: [ 'JavaScript', 'Package' ]
+      licenses: [ 'MIT' ]
     })
       .then (response) ->
-            assert.equal response.code, 201
-            done()
+            try
+              assert.equal response.code, 201
+              done()
+            catch e
+              done e
           , (error) ->
-            done error.data
-
-  it 'should retrieve and find the created package', (done) -> 
-    client.getPackages()
-      .then (response) ->
-            assert.equal response.code, 200, 
-            assert.deepEqual _.find(response.data, { 'name': 'beaker' }), { name: 'beaker', linked: false }
-            done()
-          , (error) ->
-            done error.data
+            done new Error error.data
 
   it 'should creates a new package version', (done) ->
-    client.createPackageVersion('beaker', {
+    client.createPackageVersion('my-package', {
       name: '0.1.0',
       release_notes: 'First version',
       release_url: 'http://en.wikipedia.org/wiki/Beaker_(Muppet)'
@@ -45,7 +39,7 @@ describe 'Uploads:', ->
             assert.equal response.statusCode, 201
 
   it 'should upload the file properly', (done) ->
-    client.uploadPackage('beaker', '0.1.0', "#{__dirname}/fixtures/beaker.gz", '0.1.0/beaker.gz')
+    client.uploadPackage('beaker', '0.1.0', "#{__dirname}/fixtures/beaker.gz", '0.1.0/beaker/')
       .then (response) ->
             client.getPackage('beaker')
               .then (response) ->

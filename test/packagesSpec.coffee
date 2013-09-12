@@ -7,9 +7,9 @@ apikey = 'apikey'
 organization = 'organization'
 repository = 'repo'
 
-Bintray.apiBaseUrl = 'http://localhost:8882'
+apiBaseUrl = 'http://localhost:8882'
 
-client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository }
+client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, baseUrl: apiBaseUrl }
 
 describe 'Packages:', ->
 
