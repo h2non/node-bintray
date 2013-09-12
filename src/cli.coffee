@@ -77,7 +77,7 @@ program
 program
   .command('package <action> <organization> <repository> [pkgname] [pkgfile]')
   .description('Get, update, delete or create packages. Authentication is required')
-  .usage(' <list|info|create|delete|update> <organization> <repository> [pkgname] [pkgfile]?')
+  .usage(' <list|info|create|delete|update|url> <organization> <repository> [pkgname] [pkgfile]?')
   .option('-s, --start-pos [number]', '[list] Packages list start position')
   .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter')
   .option('-t', '--description <description>', '[create|update] Package description')
@@ -128,12 +128,7 @@ program
                   log pkg.name
               else
                 log 'Packages not found'.red
-          , (error) -> 
-            if error.code is 404
-              log 'Repository not found'.red
-            else
-              log 'Error while trying to get the resource, server code:'.red, error.code or error
-            die 1
+          , error
 
       when 'get'
 
@@ -151,12 +146,7 @@ program
                 log '%s %s [%s/%s] %s', data.name, data.latest_version or '(no version)', data.owner, data.repo, data.desc
               else
                 log 'Package not found'.red
-          , (error) -> 
-            if error.code is 404
-              log 'Package not found'.red
-            else
-              log 'Error while trying to get the resource, server code:'.red, error.code or error
-            die 1
+          , error
 
       when 'create'
           
@@ -190,13 +180,7 @@ program
           .then (response) ->
             if response.code is 201
               log 'Package created successfully'.green
-          , (error) ->
-            if error.code is 409
-              log 'The package already exists. Use --force to override it'.red
-              # todo: delete package
-            else
-              log 'Cannot create the package, server code:'.red, error.code or error
-            die 1
+          , error
 
       when 'delete'
 
@@ -208,12 +192,7 @@ program
           .then (response) ->
             if response.code is 200
               log 'Package deleted successfully'.green
-          , (error) ->
-            if error.code is 404
-              log 'Package not found'.red
-            else
-              log 'Error while trying to remove the resource, server code:'.red, error.code or error
-            die 1
+          , error
 
       when 'update'
 
@@ -247,12 +226,21 @@ program
           .then (response) ->
             if response.code is 200
               log 'Package updated successfully'.green
-          , (error) ->
-            if error.code is 404
+          , error
+
+      when 'url'
+
+        if not pkgname
+          log '"--package" name option required. Type --help'.red
+          die 1
+
+        client.getPackageUrl(pkgname)
+          .then (response) ->
+            if response.code isnt 200
               log 'Package not found'.red
             else
-              log 'Error while trying to get the resource, server code:'.red, error.code or error
-            die 1
+
+          , error
 
       else
         log "Invalid '#{action}' action. Type --help".red
