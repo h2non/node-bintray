@@ -71,7 +71,6 @@ program
         log 'Both username and apikey params are required'.red
         die 1
       else
-        log 'Authentication data saved'.green
         auth.save options.username, options.apikey
         log 'Authentication data saved'.green
 
