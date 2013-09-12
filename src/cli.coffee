@@ -83,6 +83,7 @@ program
   .option('-t', '--description <description>', '[create|update] Package description')
   .option('-l', '--labels <labels>', '[create|update] Package labels comma separated')
   .option('-x', '--licenses <licenses>', '[create|update] Package licenses comma separated')
+  .option('-z', '--norepository', '[url] Get package URL from any repository')
   .option('-u, --username <username>', 'Defines the authentication username')
   .option('-k, --apikey <apikey>', 'Defines the authentication API key')
   .option('-r, --raw', 'Outputs the raw response (JSON)')
@@ -111,6 +112,11 @@ program
     else
       client = new Bintray { debug: options.debug }
 
+    if action isnt 'list'
+      if !pkgname
+        log '"--package" name option required. Type --help'.red
+        die 1
+
     switch action
       when 'list'
         # no auth
@@ -131,11 +137,6 @@ program
           , error
 
       when 'get'
-
-        if !pkgname
-          log 'Package name option required. Type --help'.red
-          die 1
-
         client.getPackage(pkgname)
           .then (response) ->
             { data } = response
@@ -149,11 +150,6 @@ program
           , error
 
       when 'create'
-          
-        if not pkgname
-          log 'Package name option required. Type --help'.red
-          die 1
-
         if options.description? and options.labels? and options.licenses?
           pkgObj = 
             name: pkgname
@@ -183,11 +179,6 @@ program
           , error
 
       when 'delete'
-
-        if not pkgname
-          log 'Package name option required. Type --help'.red
-          die 1
-
         client.deletePackage(pkgname)
           .then (response) ->
             if response.code is 200
@@ -195,11 +186,6 @@ program
           , error
 
       when 'update'
-
-        if not pkgname
-          log 'Package name option required. Type --help'.red
-          die 1
-
         if options.description? and options.labels? and options.licenses?
           pkgObj = 
             name: pkgname
@@ -229,17 +215,18 @@ program
           , error
 
       when 'url'
+        if options.norepository
+          repository = null
 
-        if not pkgname
-          log '"--package" name option required. Type --help'.red
-          die 1
-
-        client.getPackageUrl(pkgname)
+        client.getPackageUrl(pkgname, repository)
           .then (response) ->
-            if response.code isnt 200 or not response.data
-              log 'Package not found'.red
+            if options.raw
+              log JSON.stringify response.data
             else
-              response.data
+              if response.code isnt 200 or not response.data
+                log 'Package not found'.red
+              else
+                log response.data.url
           , error
 
       else
@@ -283,7 +270,7 @@ program
 
     { username, apikey } = if options.username? and options.apikey? then options else auth.get()
 
-    client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, debug: options.debug }
+    client = new Bintray { username: username, apikey: apikey, organization: options.organization, repository: options.repository, debug: options.debug }
     
     switch type
 
