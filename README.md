@@ -29,6 +29,40 @@ For easy automation, usage from other languages or from your shell scripts, you 
 ```shell
 $ bintray --help
 
+  Usage: bintray [options] [command]
+
+  Commands:
+
+    auth [options]         
+      Defines the Bintray authentication credentials
+    package [options] <action> <organization> <repository> [pkgname] [pkgfile] 
+      Get, update, delete or create packages. Authentication is required
+    search [options] <type> <query> 
+      Search packages, repositories, files, users or attributes
+    repositories [options] <organization> [repository] 
+      Get information about one or more repositories. Authentication is optional
+    user [options] <username> [action] 
+      Get information about a user. Authentication is required
+    webhook [options] <action> <organization> [repository] [pkgname] 
+      Manage webhooks. Authentication is required
+    package-version [options] <action> <organization> <repository> <pkgname> [versionfile] 
+      Get, create, delete or update package versions. Authentication is required
+    files [options] <action> <organization> <repository> <pkgname> 
+      Upload or publish packages. Authentication is required
+    sign [options] <organization> <repository> <pkgname> <passphrase> 
+      Sign files and packages versions with GPG. Authentication is required
+
+  Options:
+
+    -h, --help     output usage information
+    -V, --version  output the version number
+
+      Usage Examples:
+    
+        $ bintray auth set -u username -k apikey
+        $ bintray search package node.js -o myOrganization
+        $ bintray repositories organizationName
+        $ bintray files publish myorganization myrepository mypackage -n 0.1.0
 
 ```
 
