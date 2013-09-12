@@ -1,6 +1,6 @@
 # Node Bintray
 
-[Bintray](https://bintray.com) CLI and Node.js client package manager (written in CoffeeScript) 
+[Bintray](https://bintray.com) CLI and Node.js client (written in CoffeeScript) 
 
 # Installation
 
