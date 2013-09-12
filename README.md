@@ -300,13 +300,13 @@ Get followers of the specified repository owner
 
 ## Uploads
 
-#### uploadPackage (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application-octet-stream'])
+#### uploadPackage (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application/octet-stream'])
 
 Upload content to the specified repository path, with package and version information (both required).
 
 [Link to documentation](https://bintray.com/docs/api.html#_upload_content)
 
-#### mavenUpload (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application-octet-stream'])
+#### mavenUpload (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application/octet-stream'])
 
 [Link to documentation](https://bintray.com/docs/api.html#_maven_upload)
 
