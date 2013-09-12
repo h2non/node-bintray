@@ -6,7 +6,6 @@ common = require './common'
 pkg = require '../package.json'
 
 { log, die, error } = common
-exit = 0
 
 program
   .version(pkg.version)
@@ -66,7 +65,7 @@ program
     else
       if !options.username or !options.apikey
         log 'Both username and apikey params are required'.red
-        exit = 1
+        die 1
       else
         log 'Authentication data saved'.green
         auth.save options.username, options.apikey
@@ -76,12 +75,14 @@ program
 # Packages management
 #
 program
-  .command('package <organization> <repository> <action> [pkgname] [pkgfile]')
-  .description('Get, update, delete or create Bintray packages')
-  .usage('<organization> <repository> <list|info|create|delete|update> [pkgname] [pkgfile]?')
-  .option('-f, --file [path]', '[create|update] Path to JSON manifest file')
+  .command('package <action> <organization> <repository> [pkgname] [pkgfile]')
+  .description('Get, update, delete or create packages. Authentication is required')
+  .usage(' <list|info|create|delete|update> <organization> <repository> [pkgname] [pkgfile]?')
   .option('-s, --start-pos [number]', '[list] Packages list start position')
   .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter')
+  .option('-t', '--description <description>', '[create|update] Package description')
+  .option('-l', '--labels <labels>', '[create|update] Package labels comma separated')
+  .option('-x', '--licenses <licenses>', '[create|update] Package licenses comma separated')
   .option('-u, --username <username>', 'Defines the authentication username')
   .option('-k, --apikey <apikey>', 'Defines the authentication API key')
   .option('-r, --raw', 'Outputs the raw response (JSON)')
@@ -90,16 +91,17 @@ program
     log """
         Usage examples:
     
-        $ bintray package myorganization myrepository list
-        $ bintray package myorganization myrepository info mypackage
+        $ bintray package list myorganization myrepository 
+        $ bintray package get myorganization myrepository mypackage
+        $ bintray package delete myorganization myrepository mypackage
     """
   )
-  .action (organization, repository, action, pkgname, pkgfile, options) ->
-    actions = [ 'list', 'info', 'create', 'delete', 'update' ]
+  .action (action, repository, organization, pkgname, pkgfile, options) ->
+    actions = [ 'list', 'get', 'create', 'delete', 'update' ]
     action = action.toLowerCase()
 
     if !organization or !repository
-      log 'organization and repository command required. Type --help'.red
+      log 'Organization and repository command are required. Type --help for more information'.red
       die 1
 
     { username, apikey } = if options.username? and options.apikey? then options else auth.get()
@@ -131,9 +133,9 @@ program
               log 'Repository not found'.red
             else
               log 'Error while trying to get the resource, server code:'.red, error.code or error
-            exit = 1
+            die 1
 
-      when 'info'
+      when 'get'
 
         if !pkgname
           log 'Package name option required. Type --help'.red
@@ -154,7 +156,7 @@ program
               log 'Package not found'.red
             else
               log 'Error while trying to get the resource, server code:'.red, error.code or error
-            exit = 1
+            die 1
 
       when 'create'
           
@@ -162,19 +164,27 @@ program
           log 'Package name option required. Type --help'.red
           die 1
 
-        if not pkgfile
-          log 'No input file specified, looking for .bintray'.grey
-          pkgfile = '.bintray' # default file (proposal)
+        if options.description? and options.labels? and options.licenses?
+          pkgObj = 
+            name: pkgname
+            desc: options.description
+            labels: options.labels.split ', '
+            licenses: options.licenses ', '
+        else
+          if not pkgfile 
+            log 'No input file specified, looking for .bintray'.grey
+            pkgfile = '.bintray' # default file (proposal)
 
-        if not common.fileExists pkgfile
-          log 'File not found.'.red
-          die 1
+          if not common.fileExists pkgfile
+            log 'Package manifest JSON file not found.'.red
+            die 1
 
-        try 
-          pkgObj = JSON.parse common.readFile(pkgfile)
-        catch e
-          log 'Error parsing JSON file:', e.message
-          die 1
+        if not _.isObject pkgObj
+          try 
+            pkgObj = JSON.parse common.readFile(pkgfile)
+          catch e
+            log 'Error parsing JSON file:', e.message
+            die 1
         
         client.createPackage(pkgObj)
           .then (response) ->
@@ -186,7 +196,7 @@ program
               # todo: delete package
             else
               log 'Cannot create the package, server code:'.red, error.code or error
-            exit = 1
+            die 1
 
       when 'delete'
 
@@ -203,28 +213,35 @@ program
               log 'Package not found'.red
             else
               log 'Error while trying to remove the resource, server code:'.red, error.code or error
-            exit = 1
+            die 1
 
       when 'update'
 
         if not pkgname
           log 'Package name option required. Type --help'.red
-          exit = 1
-          return
-
-        if not pkgfile
-          log 'No input file specified, looking for .bintray'.grey
-          pkgfile = '.bintray' # default file (proposal)
-
-        if not common.fileExists pkgfile
-          log 'File not found.'.red
           die 1
 
-        try 
-          pkgObj = JSON.parse common.readFile(path.resolve(pkgfile))
-        catch e
-          log 'Error parsing JSON file:', e.message
-          die 1
+        if options.description? and options.labels? and options.licenses?
+          pkgObj = 
+            name: pkgname
+            desc: options.description
+            labels: options.labels.split ', '
+            licenses: options.licenses ', '
+        else
+          if not pkgfile 
+            log 'No input file specified, looking for .bintray'.grey
+            pkgfile = '.bintray'
+
+          if not common.fileExists pkgfile
+            log 'Package manifest JSON file not found.'.red
+            die 1
+
+        if not _.isObject pkgObj
+          try 
+            pkgObj = JSON.parse common.readFile(pkgfile)
+          catch e
+            log 'Error parsing JSON file:', e.message
+            die 1
 
         client.updatePackage(pkgname, pkgObj)
           .then (response) ->
@@ -235,7 +252,7 @@ program
               log 'Package not found'.red
             else
               log 'Error while trying to get the resource, server code:'.red, error.code or error
-            exit = 1
+            die 1
 
       else
         log "Invalid '#{action}' action. Type --help".red
@@ -247,12 +264,13 @@ program
 program
   .command('search <type> <query>')
   .description('Search packages, repositories, files, users or attributes')
-  .usage('<package|user|attribute|repository> <query> [options]?')
+  .usage('<package|user|attribute|repository|file> <query> [options]?')
   .option('-d, --desc', 'Descendent search results')
   .option('-o, --organization <name>', '[packages|attributes] Search only packages for the given organization')
   .option('-r, --repository <name>', '[packages|attributes] Search only packages for the given repository (requires -o param)')
   .option('-f, --filter <value>', '[attributes] Attribute filter rule string or JSON file path with filters')
   .option('-p, --pkgname <package>', '[attributes] Search attributes on a specific package')
+  .option('-c, --checksum', 'Query search like MD5 file checksum')
   .option('-u, --username <username>', 'Defines the authentication username')
   .option('-k, --apikey <apikey>', 'Defines the authentication API key')
   .option('-r, --raw', 'Outputs the raw response (JSON)')
@@ -264,6 +282,8 @@ program
         $ bintray search user john
         $ bintray search package node.js -o myOrganization
         $ bintray search attribute os -f 'linux'
+        $ bintray search file packageName -h 'linux'
+        $ bintray search file d8578edf8458ce06fbc5bb76a58c5ca4 --checksum
 
     """
   )
@@ -343,6 +363,31 @@ program
                   log pkg.name.white, "(#{pkg.latest_version}) [#{pkg.repo}, #{pkg.owner}] #{pkg.desc.green}"
           , error
 
+      when 'file'
+        responseFn = (response) ->
+          { data } = response
+          if options.raw 
+            log JSON.stringify data
+          else
+            if not data
+              log "Packages not found!"
+            else
+              log """
+                Filename: #{data['name']}
+                Remote path: #{data.path}
+                Package: #{data.package}
+                Version: #{data.version}
+                Repository: #{data.repository}
+                Owner: #{data.owner}
+                Created: #{data.created}
+              """
+
+        if options.checksum
+          client.searchFileChecksum(query, options.repository)
+            .then responseFn, error
+        else
+          client.searchFile(query, options.repository)
+            .then responseFn, error
       else 
         log "Invalid search mode. Type --help for more information".red
         die 1
@@ -589,6 +634,257 @@ program
         die 1
 
 #
+# Package versions
+#
+program
+  .command('package-version <action> <organization> <repository> <pkgname> [versionfile]')
+  .description('Get, create, delete or update package versions. Authentication is required')
+  .usage('<get|create|delete|update> <organization> <repository> <pkgname>')
+  .option('-n, --version <version>', 'Use a specific package version')
+  .option('-c, --release-notes <notes>', '[create] Add release note comment')
+  .option('-w, --url <url>', '[create] Add a releases URL notes/changelog')
+  .option('-t, --date <date>', '[create] Released date in ISO8601 format (optional)')
+  .option('-f, --file <path>', '[create|update] Path to JSON package version manifest file')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
+  .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .on('--help', ->
+    log """
+        Usage examples:
+
+        $ bintray package-version get myorganization myrepository mypackage
+        $ bintray package-version delete myorganization myrepository mypackage -n 0.1.0
+        $ bintray package-version create myorganization myrepository mypackage -n 0.1.0 -c 'Releases notes...' -w 'https://github.com/myorganization/mypackage/README.md'
+
+    """
+  )
+  .action (action, organization, repository, pkgname, versionfile, options) ->
+
+    if not auth.exists() and !options.username? and !options.apikey?
+      log "Authentication credentials required. Type --help for more information".red
+      die 1
+
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
+
+    client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, debug: options.debug }
+
+    if action is 'update' or action is 'delete'
+      if not options.version?
+        log '"--version" param is required. Type --help for more information'.red
+        die 1
+    
+    switch action
+      when 'get'
+
+        client.getPackageVersion(pkgname, options.version)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if response.code isnt 200
+                error response
+              else
+                log """
+                  Package: #{data.package}
+                  Version: #{data.name.green}
+                  Owner: #{data.owner}
+                  Repository: #{data.repo}
+                  Release notes: #{data.release_notes}
+                  Release URL: #{data.release_url}
+                  Attributes: #{data.attribute_names.join(', ')}
+                  Released date: #{data.released}
+                  Ordinal: #{data.ordinal}
+                """
+          , error
+
+      when 'create', 'update'
+
+        if options.version? and options.releaseNotes? and options.url?
+          versionObj = 
+            name: options.version
+            release_notes: options.releaseNotes
+            release_url: options.url 
+            released: options.released or ''
+        else
+          if not versionfile
+            log 'No input version file specified. Type --help for more information'.grey
+            die 1
+
+          if not common.fileExists versionfile
+            log 'Package manifest JSON file not found.'.red
+            die 1
+
+        if not _.isObject versionObj
+          try 
+            versionObj = JSON.parse common.readFile(versionfile)
+          catch e
+            log 'Error parsing JSON file:', e.message
+            die 1
+
+        if action is 'update'
+          client.updatePackageVersion(pkgname, options.version, _.omit versionObj, 'name' )
+            .then (response) ->
+              { data } = response
+              if options.raw 
+                log JSON.stringify data
+              else
+                if response.code isnt 200
+                  error response
+                else
+                  log "Version updated successfully!".green
+            , error
+        else
+          client.createPackageVersion(pkgname, versionObj)
+            .then (response) ->
+              { data } = response
+              if options.raw 
+                log JSON.stringify data
+              else
+                if response.code isnt 201
+                  error response
+                else
+                  log """
+                    Package: #{data.package}
+                    Version: #{data.name.green}
+                    Owner: #{data.owner}
+                    Repository: #{data.repo}
+                    Release notes: #{data.release_notes}
+                    Release URL: #{data.release_url}
+                    Attributes: #{data.attribute_names.join(', ')}
+                    Released date: #{data.released}
+                    Ordinal: #{data.ordinal}
+                  """
+            , error
+
+      when 'delete'
+        client.deletePackageVersion(pkgname, options.version)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if response.code isnt 200
+                error response
+              else
+                log 'Package version deleted successfully!'.green
+          , error
+
+      else
+        log "Invalid '#{action}' action param. Type --help for more information".red
+        die 1
+
+#
+# Files upload
+#
+program
+  .command('files <action> <organization> <repository> <pkgname>')
+  .description('Upload or publish packages. Authentication is required')
+  .usage('<upload|publish|maven> <organization> <repository> <pkgname>')
+  .option('-n, --version <version>', '[publish|upload] Upload a specific package version')
+  .option('-e, --explode', 'Explode package')
+  .option('-h, --publish', 'Publish package')
+  .option('-x, --discard', '[publish] Discard package')
+  .option('-f, --local-file <path>', '[upload|maven] Package local path to upload')
+  .option('-p, --remote-path <path>', '[upload|maven] Repository remote path to upload the package')
+  .option('-u, --username <username>', 'Defines the authentication username')
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
+  .option('-r, --raw', 'Outputs the raw response (JSON)')
+  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .on('--help', ->
+    log """
+        Usage examples:
+
+        $ bintray files upload myorganization myrepository mypackage -n 0.1.0 -f files/mypackage-0.1.0.tar.gz -p /files/x86/mypackage/ --publish
+        $ bintray files publish myorganization myrepository mypackage -n 0.1.0
+        
+    """
+  )
+  .action (action, organization, repository, pkgname, options) ->
+
+    if not auth.exists() and !options.username? and !options.apikey?
+      log "Authentication credentials required. Type --help for more information".red
+      die 1
+
+    { username, apikey } = if options.username? and options.apikey? then options else auth.get()
+
+    client = new Bintray { username: username, apikey: apikey, organization: organization, repository: repository, debug: options.debug }
+
+    if action is 'upload' or action is 'publish'
+      if not options.version?
+        log '"--version" param required. Type --help for more information'.red
+        die 1
+
+    if action is 'upload' or action is 'maven'
+      if not options.localFile
+          log '"--local-file" param with local path required. Type --help for more information'.grey
+          die 1
+
+        if not common.fileExists options.localFile
+          log 'Cannot find the local file "#{options.file}". Try using an absolute path'.red
+          die 1
+
+        if not options.remotePath
+          log '"--remote-path" param with local file path required. Type --help for more information'.grey
+          die 1
+
+    switch action      
+
+      when 'upload'
+
+        log 'Uploading file... this may take some minutes...'
+
+        client.uploadPackage(pkgname, options.version, options.localFile, options.remotePath, options.publish, options.explode)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify response.code
+            else
+              if response.code isnt 201
+                error response
+              else
+                log "File uploaded successfully".green
+          , error
+
+      when 'publish'
+
+        client.publishPackage(pkgname, options.version, options.discard)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify data
+            else
+              if response.code isnt 200
+                error response
+              else
+                if options.discard
+                  log "Files discarted: #{data.files}".green
+                else
+                  log "Files published: #{data.files}".green
+          , error
+
+      when 'maven'
+
+        log 'Uploading maven packages... this may take some minutes...'
+
+        client.uploadPackage(pkgname, options.version, options.localFile, options.remotePath, options.publish, options.explode)
+          .then (response) ->
+            { data } = response
+            if options.raw 
+              log JSON.stringify response.code
+            else
+              if response.code isnt 201
+                error response
+              else
+                log "File uploaded successfully".green
+          , error
+
+      else
+        log "Invalid '#{action}' action param. Type --help for more information".red
+        die 1
+
+#
 # GPG signing
 #
 program
@@ -647,7 +943,5 @@ program
               else
                 log "File signed successfully".green
           , error
-
-process.on 'exit', -> process.exit exit
 
 module.exports.parse = (args) -> program.parse args

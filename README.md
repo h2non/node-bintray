@@ -2,8 +2,6 @@
 
 [Bintray](https://bintray.com) CLI and Node.js client package manager (written in CoffeeScript) 
 
-## JUST FOR TESTING, WORK IN PROGRESS!
-
 # Installation
 
 For CLI usage, is preferably you install the package globally
@@ -12,7 +10,7 @@ For CLI usage, is preferably you install the package globally
 $ npm install bintray -g
 ```
 
-Otherwise for JavaScript API usage, you should install it locally
+Otherwise for JavaScript usage from your package you should install it locally
 
 ```shell
 $ npm install bintray --save
@@ -26,10 +24,12 @@ When you get the account, go to your user profile, click in `Edit` and then clic
 
 # CLI
 
-Full support via command-line interface
+For easy automation, usage from other languages or from your shell scripts, you should use the command-line interface
 
 ```shell
-$ bintray -h
+$ bintray --help
+
+
 ```
 
 # Programmatic API
@@ -38,13 +38,18 @@ The current implementation only supports the REST API version `1.0`
 
 For more information about the current API stage, see the [Bintray API documentation](https://bintray.com/docs/api.html)
 
-## Example usage
+## Basic example usage
 
 ```js
 
 var Bintray = require('bintray');
 
-var repository = new Bintray({ username: 'username', apikey: 'apiKeyToken', organization: 'my-packages', repository: 'stable' });
+var repository = new Bintray({ 
+  username: 'username', 
+  apikey: 'apiKeyToken',
+  organization: 'my-packages', 
+  repository: 'stable'
+});
 
 var myPackage = {
     name: 'node',
@@ -79,7 +84,12 @@ Autentication is optional for some resources (see [documentation](https://bintra
 ```js
 var Bintray = require('bintray')
 
-var myRepository = new Bintray('myUsername', 'myApiToken', 'mySubject', 'myRepository')
+var myRepository = new Bintray({ 
+  username: 'username', 
+  apikey: 'apiKeyToken', 
+  organization: 'my-packages', 
+  repository: 'stable' 
+});
 ```
 
 You can get the current API version from the following static Object property
@@ -143,6 +153,10 @@ Creates a new package in the specified repo (user has to be an owner of the repo
 
 [Link to documentation](https://bintray.com/docs/api.html#_update_package)
 
+#### getPackageUrl (packageName[, repository])
+
+Get the package download URL
+
 #### getPackageVersion (packageName, version = '_latest')
 
 Get general information about a specified version, or query for the latest version
@@ -199,7 +213,7 @@ Search for a repository. At least one of the name and desc search fields need to
 
 [Link to documentation](https://bintray.com/docs/api.html#_repository_search)
 
-#### searchPackage (packageName [, descendant = false, subject = current, repository = current])
+#### searchPackage (packageName [, descendant = false, subject = current, repository])
 
 Search for a package. At least one of the name and desc search fields need to be specified. May take an optional single subject name and if specified, and optional (exact) repo name. Returns an array of results, where elements are similar to the result of getting a single package.
 
@@ -215,13 +229,13 @@ Search for packages/versions inside a given repository matching a set of attribu
 
 [Link to documentation](https://bintray.com/docs/api.html#_attribute_search)
 
-#### searchFile (filename [, repository = current])
+#### searchFile (filename [, repository])
 
 Search for a file by its name. name can take the * and ? wildcard characters. May take an optional (exact) repo name to search in.
 
 [Link to documentation](https://bintray.com/docs/api.html#_file_search_by_name)
 
-#### searchFileChecksum (hash [, repository = current])
+#### searchFileChecksum (hash [, repository])
 
 Search for a file by its sha1 checksum. May take an optional repo name to search in.
 
@@ -349,14 +363,15 @@ Add mock test cases in test/mocks/ like JSON data collection
 
 # Changelog
 
-* `0.1.0` 01-09-2013
-  - Initial version (work in progress)
+* `0.1.0` 12-09-2013
+  - First release
 
 # TODO
 
-* Better error handling
-* Download progress (chunk event data)
-* More tests (webhooks & searchs)
+* Better HTTP response error handling and messages
+* Upload progress status (chunk event data)
+* Add support for download packages
+* More tests and mocks (webhooks & searchs)
 * Code usage examples
 
 # License

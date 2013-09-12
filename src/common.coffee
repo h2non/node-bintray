@@ -7,7 +7,7 @@ module.exports = class
     fs.statSync(path).size
 
   @readFile: (filepath) =>
-    data = fs.readFileSync path.resolve(filepath)
+    data = fs.readFileSync path.resolve(path.normalize(filepath))
     
     if /.json$/.test filepath
       data = JSON.parse data
@@ -26,3 +26,7 @@ module.exports = class
 
   @die: (code) ->
     process.exit code or 0
+
+  @downloadFile: (path) =>
+    # TODO
+    console.log path

@@ -14,6 +14,8 @@ promiseResponse = (response, data) ->
   }
 
 module.exports = class Rest
+  
+  @defer = Q.defer
 
   baseUrl: null
   rateLimit: 300

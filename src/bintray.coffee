@@ -6,6 +6,7 @@ sendFile = require("restler").file
 module.exports = class Bintray
 
   @apiBaseUrl = "https://api.bintray.com"
+  @downloadsHost = "http://dl.bintray.com"
   @apiVersion = "1.0"
   
   config:
@@ -15,7 +16,7 @@ module.exports = class Bintray
   constructor: (options = {}) ->
     @rest = new Rest _.extend @config, _.assign options, { password: options.apikey }
     { @organization, @repository } = @config
-    @endpointBase = "#{@organization}/#{@repository}" if @organization and @repository
+    @endpointBase = if @organization? and @repository? then "#{@organization}/#{@repository}" else ""
 
   setEndpointBase: ->
     @endpointBase = "#{@organization}/#{@repository}"
@@ -63,6 +64,22 @@ module.exports = class Bintray
   getPackageVersion: (name, version = "_latest") -> 
     endpoint = "/packages/#{@endpointBase}/#{name}/versions/#{version}" 
     return @rest.get endpoint
+
+  getPackageUrl: (pkgname, repository) ->
+    deferred = Rest.defer()
+
+    @searchFile(pkgname, repository)
+      .then (response) ->
+        { data } = response
+        if response isnt 200 or not data
+          deferred.reject response
+        else
+          data = "#{Bintray.downloadsHost}/#{data.owner}/#{data.repo}/#{data.path}"
+          deferred.resolve data
+      , (error) ->
+        deferred.reject error
+
+    return deferred.promise
  
   createPackageVersion: (name, versionObj) -> 
     endpoint = "/packages/#{@endpointBase}/#{name}/versions"
@@ -74,9 +91,11 @@ module.exports = class Bintray
     endpoint = "/packages/#{@endpointBase}/#{name}/versions/#{version}"
     return @rest.del endpoint
 
-  updatePackageVersion: (name, version) -> 
+  updatePackageVersion: (name, version, versionObj) -> 
     endpoint = "/packages/#{@endpointBase}/#{name}/versions/#{version}"
-    return @rest.patch endpoint
+    return @rest.post endpoint, {
+      data: JSON.stringify versionObj
+    }
 
   getPackageAttrs: (name, attributes) -> 
     endpoint = "/packages/#{@endpointBase}/#{name}/attributes?names=#{attributes}"
@@ -126,9 +145,10 @@ module.exports = class Bintray
     endpoint = "/search/repos?name=#{name}" + (if descendant then "desc=1" else "")
     return @rest.get endpoint
 
-  searchPackage:  (name, descendant = false, organization = @organization, repository = @repository) ->
+  searchPackage:  (name, descendant = false, organization, repository) ->
     endpoint = "/search/packages?name=#{name}" + (if descendant then "desc=1" else "")
-    endpoint += "&organization=#{organization}&repo=#{repository}" if organization and repository
+    endpoint += "&organization=#{organization}" if organization
+    endpoint += "&repo=#{repository}" if repository
     return @rest.get endpoint
 
   searchUser: (name) -> 
@@ -145,15 +165,17 @@ module.exports = class Bintray
       data: JSON.stringify attributesObj
     }
 
-  searchFile: (name, repository = @repository) -> 
-    endpoint = "/search/file?name=#{name}&repo=#{repository}"
+  searchFile: (name, repository) -> 
+    endpoint = "/search/file?name=#{name}"
+    endpoint += "&repo=#{repository}" if repository
     return @rest.get endpoint
 
-  searchFileChecksum: (hash, repository = @repository) -> 
-    endpoint = "/search/file?sha1=#{name}&repo=#{repository}"
+  searchFileChecksum: (hash, repository) -> 
+    endpoint = "/search/file?sha1=#{name}"
+    endpoint += "&repo=#{repository}" if repository
     return @rest.get endpoint
 
-  getUser: (username) -> 
+  getUser: (username) ->
     endpoint = "/users/#{username}"
     return @rest.get endpoint
 
@@ -161,7 +183,7 @@ module.exports = class Bintray
     endpoint = "/users/#{username}/followers?startPosition=#{startPosition}"
     return @rest.get endpoint
 
-  uploadPackage: (name, version, filePath, remotePath = '/', publish = true, explode = false, mimeType = "application/octet-stream") -> 
+  uploadPackage: (name, version, filePath, remotePath = '/', publish = false, explode = false, mimeType = "application/octet-stream") -> 
     endpoint = "/content/#{@endpointBase}/#{name}/#{version}/#{remotePath}" + (if publish then ";publish=1" else "") + (if explode then ";explode=1" else "")
     return @rest.put endpoint, {
       multipart: true
