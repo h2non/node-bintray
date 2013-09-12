@@ -19,7 +19,7 @@ program.on '--help', ->
           $ bintray search package node.js -o myOrganization
           $ bintray repositories organizationName
           $ bintray files publish myorganization myrepository mypackage -n 0.1.0
-  
+
   """
 
 #
@@ -27,7 +27,7 @@ program.on '--help', ->
 #
 program
   .command('auth')
-  .description('\n  Defines the Bintray authentication credentials')
+  .description('\n  Defines the Bintray authentication credentials'.cyan)
   .usage('[options]')
   .option('-c, --clean', 'Clean the stored authentication credentials')
   .option('-s, --show', 'Show current stored authentication credentials')
@@ -80,7 +80,7 @@ program
 #
 program
   .command('package <action> <organization> <repository> [pkgname] [pkgfile]')
-  .description('\n  Get, update, delete or create packages. Authentication required')
+  .description('\n  Get, update, delete or create packages. Authentication required'.cyan)
   .usage(' <list|info|create|delete|update|url> <organization> <repository> [pkgname] [pkgfile]?')
   .option('-s, --start-pos [number]', '[list] Packages list start position')
   .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter')
@@ -243,7 +243,7 @@ program
 #
 program
   .command('search <type> <query>')
-  .description('\n  Search packages, repositories, files, users or attributes')
+  .description('\n  Search packages, repositories, files, users or attributes'.cyan)
   .usage('<package|user|attribute|repository|file> <query> [options]?')
   .option('-d, --desc', 'Descendent search results')
   .option('-o, --organization <name>', '[packages|attributes] Search only packages for the given organization')
@@ -378,7 +378,7 @@ program
 #
 program
   .command('repositories <organization> [repository]')
-  .description('\n  Get information about one or more repositories. Authentication is optional')
+  .description('\n  Get information about one or more repositories. Authentication is optional'.cyan)
   .usage('<organization> [repository]')
   .option('-u, --username <username>', 'Defines the authentication username')
   .option('-k, --apikey <apikey>', 'Defines the authentication API key')
@@ -436,7 +436,7 @@ program
 #
 program
   .command('user <username> [action]')
-  .description('\n  Get information about a user. Authentication required')
+  .description('\n  Get information about a user. Authentication required'.cyan)
   .usage('<username> [action]')
   .option('-s, --start-pos [number]', 'Followers list start position')
   .option('-u, --username <username>', 'Defines the authentication username')
@@ -493,7 +493,7 @@ program
 #
 program
   .command('webhook <action> <organization> [repository] [pkgname]')
-  .description('\n  Manage webhooks. Authentication required')
+  .description('\n  Manage webhooks. Authentication required'.cyan)
   .usage('<list|create|test|delete> <organization> [respository] [pkgname]')
   .option('-w, --url <url>', 'Callback URL. May contain the %r and %p tokens for repo and package name')
   .option('-m, --method <method>', 'HTTP request method for the callback URL. Defaults to POST')
@@ -619,7 +619,7 @@ program
 #
 program
   .command('package-version <action> <organization> <repository> <pkgname> [versionfile]')
-  .description('\n  Get, create, delete or update package versions. Authentication required')
+  .description('\n  Get, create, delete or update package versions. Authentication required'.cyan)
   .usage('<get|create|delete|update> <organization> <repository> <pkgname>')
   .option('-n, --version <version>', 'Use a specific package version')
   .option('-c, --release-notes <notes>', '[create] Add release note comment')
@@ -761,7 +761,7 @@ program
 #
 program
   .command('files <action> <organization> <repository> <pkgname>')
-  .description('\n  Upload or publish packages. Authentication required')
+  .description('\n  Upload or publish packages. Authentication required'.cyan)
   .usage('<upload|publish|maven> <organization> <repository> <pkgname>')
   .option('-n, --version <version>', '[publish|upload] Upload a specific package version')
   .option('-e, --explode', 'Explode package')
@@ -870,7 +870,7 @@ program
 #
 program
   .command('sign <organization> <repository> <pkgname> <passphrase>')
-  .description('\n  Sign files and packages versions with GPG. Authentication required')
+  .description('\n  Sign files and packages versions with GPG. Authentication required'.cyan)
   .usage('<organization> <repository> <pkgname> <passphrase>')
   .option('-n, --version <version>', 'Defines a specific package version')
   .option('-u, --username <username>', 'Defines the authentication username')
