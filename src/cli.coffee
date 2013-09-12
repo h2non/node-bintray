@@ -236,10 +236,10 @@ program
 
         client.getPackageUrl(pkgname)
           .then (response) ->
-            if response.code isnt 200
+            if response.code isnt 200 or not response.data
               log 'Package not found'.red
             else
-
+              response.data
           , error
 
       else
