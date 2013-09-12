@@ -70,10 +70,14 @@ module.exports = class Bintray
 
     @searchFile(pkgname, repository)
       .then (response) ->
+        notFound = ->
+          response.code = 404
+          response.status = 'Not Found'
+          return response
+
         { data } = response
         if response isnt 200 or _.isEmpty data
-          response.code = 404
-          deferred.reject response
+          deferred.reject notFound()
         else
           if _.isArray data
             data = data[0]
@@ -81,10 +85,9 @@ module.exports = class Bintray
               response.data = { url: "#{Bintray.downloadsHost}/#{data.owner}/#{data.repo}/#{data.path}" } 
               deferred.resolve response
             else
-              response.code = 404
-              deferred.reject response
+              deferred.reject notFound()
           else
-            deferred.reject response
+            deferred.reject notFound()
       , (error) ->
         deferred.reject error
 
