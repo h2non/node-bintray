@@ -80,7 +80,7 @@ program
 #
 program
   .command('package <action> <organization> <repository> [pkgname] [pkgfile]')
-  .description('\n  Get, update, delete or create packages. Authentication is required')
+  .description('\n  Get, update, delete or create packages. Authentication required')
   .usage(' <list|info|create|delete|update|url> <organization> <repository> [pkgname] [pkgfile]?')
   .option('-s, --start-pos [number]', '[list] Packages list start position')
   .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter')
@@ -436,7 +436,7 @@ program
 #
 program
   .command('user <username> [action]')
-  .description('\n  Get information about a user. Authentication is required')
+  .description('\n  Get information about a user. Authentication required')
   .usage('<username> [action]')
   .option('-s, --start-pos [number]', 'Followers list start position')
   .option('-u, --username <username>', 'Defines the authentication username')
@@ -493,7 +493,7 @@ program
 #
 program
   .command('webhook <action> <organization> [repository] [pkgname]')
-  .description('\n  Manage webhooks. Authentication is required')
+  .description('\n  Manage webhooks. Authentication required')
   .usage('<list|create|test|delete> <organization> [respository] [pkgname]')
   .option('-w, --url <url>', 'Callback URL. May contain the %r and %p tokens for repo and package name')
   .option('-m, --method <method>', 'HTTP request method for the callback URL. Defaults to POST')
@@ -619,7 +619,7 @@ program
 #
 program
   .command('package-version <action> <organization> <repository> <pkgname> [versionfile]')
-  .description('\n  Get, create, delete or update package versions. Authentication is required')
+  .description('\n  Get, create, delete or update package versions. Authentication required')
   .usage('<get|create|delete|update> <organization> <repository> <pkgname>')
   .option('-n, --version <version>', 'Use a specific package version')
   .option('-c, --release-notes <notes>', '[create] Add release note comment')
@@ -761,7 +761,7 @@ program
 #
 program
   .command('files <action> <organization> <repository> <pkgname>')
-  .description('\n  Upload or publish packages. Authentication is required')
+  .description('\n  Upload or publish packages. Authentication required')
   .usage('<upload|publish|maven> <organization> <repository> <pkgname>')
   .option('-n, --version <version>', '[publish|upload] Upload a specific package version')
   .option('-e, --explode', 'Explode package')
@@ -870,7 +870,7 @@ program
 #
 program
   .command('sign <organization> <repository> <pkgname> <passphrase>')
-  .description('\n  Sign files and packages versions with GPG. Authentication is required')
+  .description('\n  Sign files and packages versions with GPG. Authentication required')
   .usage('<organization> <repository> <pkgname> <passphrase>')
   .option('-n, --version <version>', 'Defines a specific package version')
   .option('-u, --username <username>', 'Defines the authentication username')
