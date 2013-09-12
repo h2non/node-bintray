@@ -50,6 +50,7 @@ module.exports = class Rest
 
     rest
       .on 'complete', (result, response) =>
+
         rateLimit = @getRateLimit response
         log "[#{response.statusCode}] [#{rateLimit or 'Unknown'}] #{response.req.path}".green if @debug
 

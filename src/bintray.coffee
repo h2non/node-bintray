@@ -70,11 +70,21 @@ module.exports = class Bintray
 
     @searchFile(pkgname, repository)
       .then (response) ->
-        if response isnt 200 or not response.data
+        { data } = response
+        if response isnt 200 or _.isEmpty data
+          response.code = 404
           deferred.reject response
         else
-          response.data = { url: "#{Bintray.downloadsHost}/#{data.owner}/#{data.repo}/#{data.path}" }
-          deferred.resolve response
+          if _.isArray data
+            data = data[0]
+            if data
+              response.data = { url: "#{Bintray.downloadsHost}/#{data.owner}/#{data.repo}/#{data.path}" } 
+              deferred.resolve response
+            else
+              response.code = 404
+              deferred.reject response
+          else
+            deferred.reject response
       , (error) ->
         deferred.reject error
 

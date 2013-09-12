@@ -5,6 +5,7 @@ auth = require './auth'
 common = require './common'
 pkg = require '../package.json'
 
+# import general usage functions
 { log, die, error } = common
 
 program
@@ -12,9 +13,12 @@ program
 
 program.on '--help', ->
   log """
-      Examples:
+      Usage Examples:
       
       $ bintray auth set -u username -k apikey
+      $ bintray search package node.js -o myOrganization
+      $ bintray repositories organizationName
+      $ bintray files publish myorganization myrepository mypackage -n 0.1.0
   """
 
 #
@@ -102,7 +106,7 @@ program
     action = action.toLowerCase()
 
     if !organization or !repository
-      log 'Organization and repository command are required. Type --help for more information'.red
+      log '"organization and repository command are required. Type --help for more information'.red
       die 1
 
     { username, apikey } = if options.username? and options.apikey? then options else auth.get()
@@ -114,7 +118,7 @@ program
 
     if action isnt 'list'
       if !pkgname
-        log '"--package" name option required. Type --help'.red
+        log '"package" name argument required. Type --help for more information'.red
         die 1
 
     switch action
@@ -220,6 +224,7 @@ program
 
         client.getPackageUrl(pkgname, repository)
           .then (response) ->
+            console.log response.data
             if options.raw
               log JSON.stringify response.data
             else
@@ -347,15 +352,16 @@ program
             if not data
               log "Packages not found!"
             else
-              log """
-                Filename: #{data['name']}
-                Remote path: #{data.path}
-                Package: #{data.package}
-                Version: #{data.version}
-                Repository: #{data.repository}
-                Owner: #{data.owner}
-                Created: #{data.created}
-              """
+              data.forEach (pkg) -> 
+                log """
+                  Filename: #{pkg['name']}
+                  Remote path: #{pkg.path}
+                  Package: #{pkg.package}
+                  Version: #{pkg.version}
+                  Repository: #{pkg.repository}
+                  Owner: #{pkg.owner}
+                  Created: #{pkg.created}
+                """
 
         if options.checksum
           client.searchFileChecksum(query, options.repository)
