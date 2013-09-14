@@ -35,7 +35,7 @@ When you get the account, go to your user profile, click in `Edit` and then clic
 
 ## CLI
 
-For easy automation, usage from other languages or from your shell scripts, you should use the full featured command-line interface:
+For easy automation, usage from other languages or from your shell scripts you can use the full supported command-line interface:
 
 ```shell
 $ bintray --help
