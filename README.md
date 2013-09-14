@@ -661,7 +661,7 @@ Add mock test cases in test/mocks/ like JSON data collection
 
 ## Changelog
 
-* `0.1.0` 14-09-2013
+* `0.1.0` 15-09-2013
   - First release (still beta)
 
 ## TODO
