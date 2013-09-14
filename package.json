@@ -19,7 +19,11 @@
     "client",
     "package",
     "management",
-    "repository"
+    "repository",
+    "jfrog",
+    "rpm",
+    "maven",
+    "packages"
   ],
   "directories": {
     "lib": "./lib"
