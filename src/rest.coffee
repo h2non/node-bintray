@@ -48,8 +48,9 @@ module.exports = class Rest
 
     log "[#{rest.options.method}] [#{rest.options.username or 'NoAuth'}] #{rest.url.path}".grey if @debug
 
+    # uses 'once' method instead of 'on' due for EventEmitter possible memory leaks 
     rest
-      .on 'complete', (result, response) =>
+      .once 'complete', (result, response) =>
 
         rateLimit = @getRateLimit response
         log "[#{response.statusCode}] [#{rateLimit or 'Unknown'}] #{response.req.path}".green if @debug
@@ -63,6 +64,9 @@ module.exports = class Rest
           deferred.reject promiseResponse response, result
         else
           deferred.resolve promiseResponse response, result
+
+        # clean error listeners
+        rest.removeAllListeners 'error'
 
     return deferred.promise
 

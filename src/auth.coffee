@@ -7,10 +7,10 @@ module.exports = class
   @store: "#{__dirname}/../data/auth.json"
 
   @get: => 
-    if @exists() and @credentials?
+    if @exists() and not @credentials
       @credentials = JSON.parse(fs.readFileSync @store)
-    else
-      return false
+
+    return @credentials
 
   @save: (username, apikey) =>
     fs.writeFileSync @store, JSON.stringify({ username: username, apikey: apikey }, null, 2) if username? and apikey?

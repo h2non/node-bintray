@@ -1,0 +1,54 @@
+[
+  {
+    "request": {
+      "url": "^/users/beaker$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "GET"
+    }, 
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "body": {
+        "name": "beaker",
+        "full_name": "Beaker (Muppets)",
+        "gravatar_id": "whatever",
+        "repos": ["repo1", "repo2"],
+        "organizations": ["org1", "org2"],
+        "followers_count": 82,
+        "registered": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+        "quota_used_bytes": 55720
+      }
+    }
+  },
+  {
+    "request": {
+      "url": "^/users/beaker/followers$",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "GET"
+    }, 
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "body": [
+        {"name": "user1"},
+        {"name": "user2"}
+      ]
+    }
+  }
+]

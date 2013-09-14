@@ -1,5 +1,6 @@
 fs = require 'fs'
 path = require 'path'
+_ = require 'lodash'
 
 module.exports = class 
 
@@ -27,6 +28,12 @@ module.exports = class
   @die: (code) ->
     process.exit code or 0
 
-  @downloadFile: (path) =>
-    # TODO
-    console.log path
+  @printObj: (obj) ->
+    arr = []
+    for prop of obj when obj.hasOwnProperty prop
+      value = obj[prop]
+      if (value).toString() isnt '[object Object]'
+        value = value.join ', ' if _.isArray value
+        arr.push (prop.charAt(0).toUpperCase() + prop.slice(1)).replace('_', ' ') + ': ' + value
+
+    console.log arr.join '\n'

@@ -153,14 +153,18 @@ module.exports = class Bintray
 
     return @rest.del endpoint
 
-  searchRepository: (name, descendant = false) -> 
-    endpoint = "/search/repos?name=#{name}" + (if descendant then "desc=1" else "")
+  searchRepository: (name, description) -> 
+    endpoint = "/search/repos?"
+    endpoint += "name=#{name}" if name
+    endpoint += "&desc=#{description}" if description
     return @rest.get endpoint
 
-  searchPackage:  (name, descendant = false, organization, repository) ->
-    endpoint = "/search/packages?name=#{name}" + (if descendant then "desc=1" else "")
-    endpoint += "&organization=#{organization}" if organization
-    endpoint += "&repo=#{repository}" if repository
+  searchPackage:  (name, description, organization, repository) ->
+    endpoint = "/search/packages?"
+    endpoint += "name=#{name}" if name
+    endpoint += "&desc=#{description}" if description
+    endpoint += "&organization=#{organization}" if organization?
+    endpoint += "&repo=#{repository}" if repository?
     return @rest.get endpoint
 
   searchUser: (name) -> 
@@ -178,7 +182,7 @@ module.exports = class Bintray
     }
 
   searchFile: (name, repository) -> 
-    endpoint = "/search/file?name=#{name}"
+    endpoint = "/search/file?name=#{encodeURIComponent(name)}"
     endpoint += "&repo=#{repository}" if repository
     return @rest.get endpoint
 
@@ -192,7 +196,8 @@ module.exports = class Bintray
     return @rest.get endpoint
 
   getUserFollowers: (username, startPosition = 0) -> 
-    endpoint = "/users/#{username}/followers?startPosition=#{startPosition}"
+    endpoint = "/users/#{username}/followers"
+    endpoint += "?startPosition=#{startPosition}" if startPosition
     return @rest.get endpoint
 
   uploadPackage: (name, version, filePath, remotePath = '/', publish = false, explode = false, mimeType = "application/octet-stream") -> 

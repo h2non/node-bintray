@@ -5,8 +5,7 @@ auth = require './auth'
 common = require './common'
 pkg = require '../package.json'
 
-# import general usage functions
-{ log, die, error } = common
+{ printObj, log, die, error } = common
 
 program
   .version(pkg.version)
@@ -29,10 +28,10 @@ program
   .command('auth')
   .description('\n  Defines the Bintray authentication credentials'.cyan)
   .usage('[options]')
-  .option('-c, --clean', 'Clean the stored authentication credentials')
-  .option('-s, --show', 'Show current stored authentication credentials')
-  .option('-u, --username <username>', 'Bintray username')
-  .option('-k, --apikey <apikey>', 'User API key')
+  .option('-c, --clean', 'Clean the stored authentication credentials'.cyan)
+  .option('-s, --show', 'Show current stored authentication credentials'.cyan)
+  .option('-u, --username <username>', 'Bintray username'.cyan)
+  .option('-k, --apikey <apikey>', 'User API key'.cyan)
   .on('--help', ->
     log """
         Usage examples:
@@ -43,27 +42,26 @@ program
     """
   )
   .action (options) -> 
-    storeExists = common.authDefined
+    authExists = auth.exists()
+
+    showAuth = () ->
+      log printObj auth.get()
 
     if options.clean 
-      if storeExists
+      if authExists
         auth.clean()
         log 'Authentication data cleaned'.green
       else
         log 'No authentication credentials defined, nothing to clean'.green
     else if options.show
-      if storeExists
-        authData = auth.get()
-        log 'Username:', authData.username
-        log 'API key: ', authData.apikey
+      if authExists
+        showAuth()
       else
         log 'No authentication credentials stored'.green
     else if !options.username and !options.apikey
-      if auth.exists()
-        authData = auth.get()
-        log 'Username:', authData.username
-        log 'API key: ', authData.apikey
-        log '\n', 'Type --help to see the available options'
+      if authExists
+        showAuth()
+        log 'Type "auth --help" to see more available options'
       else
         log 'No authentication data defined. Use:'
         log '$ bintray auth -u myuser -k myapikey'.grey
@@ -82,22 +80,24 @@ program
   .command('package <action> <organization> <repository> [pkgname] [pkgfile]')
   .description('\n  Get, update, delete or create packages. Authentication required'.cyan)
   .usage(' <list|info|create|delete|update|url> <organization> <repository> [pkgname] [pkgfile]?')
-  .option('-s, --start-pos [number]', '[list] Packages list start position')
-  .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter')
-  .option('-t', '--description <description>', '[create|update] Package description')
-  .option('-l', '--labels <labels>', '[create|update] Package labels comma separated')
-  .option('-x', '--licenses <licenses>', '[create|update] Package licenses comma separated')
-  .option('-z', '--norepository', '[url] Get package URL from any repository')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-s, --start-pos [number]', '[list] Packages list start position'.cyan)
+  .option('-n, --start-name [prefix]', '[list] Packages start name prefix filter'.cyan)
+  .option('-t, --description <description>', '[create|update] Package description'.cyan)
+  .option('-l, --labels <labels>', '[create|update] Package labels comma separated'.cyan)
+  .option('-x, --licenses <licenses>', '[create|update] Package licenses comma separated'.cyan)
+  .option('-z, --norepository', '[url] Get package URL from any repository'.cyan)
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
     
         $ bintray package list myorganization myrepository 
         $ bintray package get myorganization myrepository mypackage
+        $ bintray package create myorganization myrepository mypackage \\
+            --description 'My package' -labels 'package,binary' --license 'MIT,AGPL'
         $ bintray package delete myorganization myrepository mypackage
     """
   )
@@ -134,8 +134,7 @@ program
             else
               if data.length
                 log "Available packages at '#{repository}' repository:".grey
-                data.forEach (pkg) ->
-                  log pkg.name
+                data.forEach printObj 
               else
                 log 'Packages not found'.red
           , error
@@ -158,8 +157,8 @@ program
           pkgObj = 
             name: pkgname
             desc: options.description
-            labels: options.labels.split ', '
-            licenses: options.licenses ', '
+            labels: options.labels.split ','
+            licenses: options.licenses ','
         else
           if not pkgfile 
             log 'No input file specified, looking for .bintray'.grey
@@ -194,8 +193,8 @@ program
           pkgObj = 
             name: pkgname
             desc: options.description
-            labels: options.labels.split ', '
-            licenses: options.licenses ', '
+            labels: options.labels.split ','
+            licenses: options.licenses ','
         else
           if not pkgfile 
             log 'No input file specified, looking for .bintray'.grey
@@ -245,26 +244,26 @@ program
   .command('search <type> <query>')
   .description('\n  Search packages, repositories, files, users or attributes'.cyan)
   .usage('<package|user|attribute|repository|file> <query> [options]?')
-  .option('-d, --desc', 'Descendent search results')
-  .option('-o, --organization <name>', '[packages|attributes] Search only packages for the given organization')
-  .option('-r, --repository <name>', '[packages|attributes] Search only packages for the given repository (requires -o param)')
-  .option('-f, --filter <value>', '[attributes] Attribute filter rule string or JSON file path with filters')
-  .option('-p, --pkgname <package>', '[attributes] Search attributes on a specific package')
-  .option('-c, --checksum', 'Query search like MD5 file checksum')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-d, --desc', 'Descendent search results'.cyan)
+  .option('-o, --organization <name>', '\n    [packages|attributes] Search only packages for the given organization'.cyan)
+  .option('-r, --repository <name>', '\n    [packages|attributes] Search only packages for the given repository (requires -o param)'.cyan)
+  .option('-f, --filter <value>', '\n    [attributes] Attribute filter rule string or JSON file path with filters'.cyan)
+  .option('-p, --pkgname <package>', '\n    [attributes] Search attributes on a specific package'.cyan)
+  .option('-c, --checksum', '\n    Query search like MD5 file checksum'.cyan)
+  .option('-u, --username <username>', '\n    Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', '\n    Defines the authentication API key'.cyan)
+  .option('-r, --raw', '\n    Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', '\n    Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
 
         $ bintray search user john
         $ bintray search package node.js -o myOrganization
+        $ bintray search repository reponame
         $ bintray search attribute os -f 'linux'
         $ bintray search file packageName -h 'linux'
         $ bintray search file d8578edf8458ce06fbc5bb76a58c5ca4 --checksum
-
     """
   )
   .action (type, query, options) ->
@@ -289,7 +288,7 @@ program
               if not data.length
                 log "Package not found!"              
               else
-                data.forEach (pkg) -> 
+                data.forEach (pkg) ->
                   log pkg.name.white, "(#{pkg.latest_version}) [#{pkg.repo}, #{pkg.owner}] #{pkg.desc.green}"
           , error
 
@@ -352,16 +351,7 @@ program
             if not data
               log "Packages not found!"
             else
-              data.forEach (pkg) -> 
-                log """
-                  Filename: #{pkg['name']}
-                  Remote path: #{pkg.path}
-                  Package: #{pkg.package}
-                  Version: #{pkg.version}
-                  Repository: #{pkg.repository}
-                  Owner: #{pkg.owner}
-                  Created: #{pkg.created}
-                """
+              data.forEach printObj
 
         if options.checksum
           client.searchFileChecksum(query, options.repository)
@@ -380,16 +370,17 @@ program
   .command('repositories <organization> [repository]')
   .description('\n  Get information about one or more repositories. Authentication is optional'.cyan)
   .usage('<organization> [repository]')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
 
         $ bintray repositories organizationName
         $ bintray repositories organizationName repoName
+
 
     """
   )
@@ -438,11 +429,11 @@ program
   .command('user <username> [action]')
   .description('\n  Get information about a user. Authentication required'.cyan)
   .usage('<username> [action]')
-  .option('-s, --start-pos [number]', 'Followers list start position')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-s, --start-pos [number]', 'Followers list start position'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
@@ -472,8 +463,7 @@ program
               if not data.length
                 log "The user has no followers!"
               else
-                data.forEach (follower) -> 
-                  log follower.name.white
+                data.forEach printObj
           , error
     else
       client.getUser(username)
@@ -495,19 +485,20 @@ program
   .command('webhook <action> <organization> [repository] [pkgname]')
   .description('\n  Manage webhooks. Authentication required'.cyan)
   .usage('<list|create|test|delete> <organization> [respository] [pkgname]')
-  .option('-w, --url <url>', 'Callback URL. May contain the %r and %p tokens for repo and package name')
-  .option('-m, --method <method>', 'HTTP request method for the callback URL. Defaults to POST')
-  .option('-n, --version <version>', 'Use a specific package version')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-w, --url <url>', '\n    Callback URL. May contain the %r and %p tokens for repo and package name'.cyan)
+  .option('-m, --method <method>', '\n    HTTP request method for the callback URL. Defaults to POST'.cyan)
+  .option('-n, --version <version>', 'Use a specific package version'.cyan)
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
 
         $ bintray webhook list myorganization myrepository
-        $ bintray webhook create myorganization myrepository mypackage -w 'http://callbacks.myci.org/%r-%p-build' -m 'GET'
+        $ bintray webhook create myorganization myrepository mypackage \\ 
+            -w 'http://callbacks.myci.org/%r-%p-build' -m 'GET'
         $ bintray webhook test myorganization myrepository mypackage -n '0.1.0'
         $ bintray webhook delete myorganization myrepository mypackage
 
@@ -621,22 +612,25 @@ program
   .command('package-version <action> <organization> <repository> <pkgname> [versionfile]')
   .description('\n  Get, create, delete or update package versions. Authentication required'.cyan)
   .usage('<get|create|delete|update> <organization> <repository> <pkgname>')
-  .option('-n, --version <version>', 'Use a specific package version')
-  .option('-c, --release-notes <notes>', '[create] Add release note comment')
-  .option('-w, --url <url>', '[create] Add a releases URL notes/changelog')
-  .option('-t, --date <date>', '[create] Released date in ISO8601 format (optional)')
-  .option('-f, --file <path>', '[create|update] Path to JSON package version manifest file')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-n, --version <version>', 'Use a specific package version'.cyan)
+  .option('-c, --release-notes <notes>', '[create] Add release note comment'.cyan)
+  .option('-w, --url <url>', '[create] Add a releases URL notes/changelog'.cyan)
+  .option('-t, --date <date>', '\n    [create] Released date in ISO8601 format (optional)'.cyan)
+  .option('-f, --file <path>', '\n    [create|update] Path to JSON package version manifest file'.cyan)
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
 
         $ bintray package-version get myorganization myrepository mypackage
         $ bintray package-version delete myorganization myrepository mypackage -n 0.1.0
-        $ bintray package-version create myorganization myrepository mypackage -n 0.1.0 -c 'Releases notes...' -w 'https://github.com/myorganization/mypackage/README.md'
+        $ bintray package-version create myorganization myrepository mypackage \\
+            -n 0.1.0 -c 'Releases notes...' -w 'https://github.com/myorganization/mypackage/README.md'
+        $ bintray package-version update myorganization myrepository mypackage \\
+            -n 0.1.0 -c 'My new releases notes' -w 'https://github.com/myorganization/mypackage/README.md'
 
     """
   )
@@ -667,17 +661,7 @@ program
               if response.code isnt 200
                 error response
               else
-                log """
-                  Package: #{data.package}
-                  Version: #{data.name.green}
-                  Owner: #{data.owner}
-                  Repository: #{data.repo}
-                  Release notes: #{data.release_notes}
-                  Release URL: #{data.release_url}
-                  Attributes: #{data.attribute_names.join(', ')}
-                  Released date: #{data.released}
-                  Ordinal: #{data.ordinal}
-                """
+                printObj data
           , error
 
       when 'create', 'update'
@@ -726,17 +710,7 @@ program
                 if response.code isnt 201
                   error response
                 else
-                  log """
-                    Package: #{data.package}
-                    Version: #{data.name.green}
-                    Owner: #{data.owner}
-                    Repository: #{data.repo}
-                    Release notes: #{data.release_notes}
-                    Release URL: #{data.release_url}
-                    Attributes: #{data.attribute_names.join(', ')}
-                    Released date: #{data.released}
-                    Ordinal: #{data.ordinal}
-                  """
+                  printObj data
             , error
 
       when 'delete'
@@ -763,21 +737,22 @@ program
   .command('files <action> <organization> <repository> <pkgname>')
   .description('\n  Upload or publish packages. Authentication required'.cyan)
   .usage('<upload|publish|maven> <organization> <repository> <pkgname>')
-  .option('-n, --version <version>', '[publish|upload] Upload a specific package version')
-  .option('-e, --explode', 'Explode package')
-  .option('-h, --publish', 'Publish package')
-  .option('-x, --discard', '[publish] Discard package')
-  .option('-f, --local-file <path>', '[upload|maven] Package local path to upload')
-  .option('-p, --remote-path <path>', '[upload|maven] Repository remote path to upload the package')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-n, --version <version>', '\n    [publish|upload] Upload a specific package version'.cyan)
+  .option('-e, --explode', 'Explode package'.cyan)
+  .option('-h, --publish', 'Publish package'.cyan)
+  .option('-x, --discard', '[publish] Discard package'.cyan)
+  .option('-f, --local-file <path>', '\n    [upload|maven] Package local path to upload'.cyan)
+  .option('-p, --remote-path <path>', '\n    [upload|maven] Repository remote path to upload the package'.cyan)
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:
 
-        $ bintray files upload myorganization myrepository mypackage -n 0.1.0 -f files/mypackage-0.1.0.tar.gz -p /files/x86/mypackage/ --publish
+        $ bintray files upload myorganization myrepository mypackage \\ 
+            -n 0.1.0 -f files/mypackage-0.1.0.tar.gz -p /files/x86/mypackage/ --publish
         $ bintray files publish myorganization myrepository mypackage -n 0.1.0
         
     """
@@ -872,11 +847,11 @@ program
   .command('sign <organization> <repository> <pkgname> <passphrase>')
   .description('\n  Sign files and packages versions with GPG. Authentication required'.cyan)
   .usage('<organization> <repository> <pkgname> <passphrase>')
-  .option('-n, --version <version>', 'Defines a specific package version')
-  .option('-u, --username <username>', 'Defines the authentication username')
-  .option('-k, --apikey <apikey>', 'Defines the authentication API key')
-  .option('-r, --raw', 'Outputs the raw response (JSON)')
-  .option('-d, --debug', 'Enables the verbose/debug output mode')
+  .option('-n, --version <version>', 'Defines a specific package version'.cyan)
+  .option('-u, --username <username>', 'Defines the authentication username'.cyan)
+  .option('-k, --apikey <apikey>', 'Defines the authentication API key'.cyan)
+  .option('-r, --raw', 'Outputs the raw response (JSON)'.cyan)
+  .option('-d, --debug', 'Enables the verbose/debug output mode'.cyan)
   .on('--help', ->
     log """
         Usage examples:

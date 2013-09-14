@@ -14,12 +14,7 @@ client = new Bintray { username: username, apikey: apikey, organization: organiz
 describe 'Packages:', ->
 
   it 'should register a new package properly', (done) ->
-    client.createPackage({
-      name: 'my-package'
-      desc: 'My package description'
-      labels: [ 'JavaScript', 'Package' ]
-      licenses: [ 'MIT' ]
-    })
+    client.createPackage(require "#{__dirname}/fixtures/my-package.json")
       .then (response) ->
         try
           assert.equal response.code, 201
@@ -42,10 +37,7 @@ describe 'Packages:', ->
         done new Error error.data
 
   it 'should update package information', (done) -> 
-    client.updatePackage('my-package', {
-      desc: 'My super package',
-      licenses: [ 'BSD' ]
-    })
+    client.updatePackage('my-package', require "#{__dirname}/fixtures/my-package.update.json")
       .then (response) ->
         try
           assert.equal response.code, 200

@@ -1,5 +1,5 @@
 {
- "desc": "I'm a muppet",
- "labels": ["muppet"],
- "licenses": ["BSD"]
+  "desc": "My super package",
+  "licenses": [ "BSD" ], 
+  "labels": [ "package" ]
 }

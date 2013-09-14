@@ -1,0 +1,52 @@
+[
+  {
+    "request": {
+      "url": "^/repos/organization$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "GET"
+    }, 
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "body": [{
+        "name": "repo",
+        "owner": "organization"
+      }]
+    }
+  },
+  {
+    "request": {
+      "url": "^/repos/organization/repo$", 
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Basic dXNlcm5hbWU6YXBpa2V5"
+      },
+      "method": "GET"
+    }, 
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json",
+        "X-RangeLimit-Total": 0,
+        "X-RateLimit-Limit": 300,
+        "X-RateLimit-Remaining": 250
+      },
+      "body": {
+        "name": "repo",
+        "owner": "organization",
+        "desc": "This repo rules",
+        "labels": ["java", "maven"],
+        "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+        "package_count": 87
+      }
+    }
+  }
+]
