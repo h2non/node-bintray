@@ -68,12 +68,12 @@ $ bintray --help
     -h, --help     output usage information
     -V, --version  output the version number
 
-      Usage Examples:
-    
-        $ bintray auth set -u username -k apikey
-        $ bintray search package node.js -o myOrganization
-        $ bintray repositories organizationName
-        $ bintray files publish myorganization myrepository mypackage -n 0.1.0
+  Usage Examples:
+
+    $ bintray auth set -u username -k apikey
+    $ bintray search package node.js -o myOrganization
+    $ bintray repositories organizationName
+    $ bintray files publish myorganization myrepository mypackage -n 0.1.0
 
 ```
 
