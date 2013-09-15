@@ -2,3 +2,4 @@ src/
 test/
 *.coffee
 .travis.yml
+data/*
