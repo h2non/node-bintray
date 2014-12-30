@@ -34,14 +34,12 @@ module.exports = class Rest
     _.extend @options, _.omit options, 'baseUrl', 'debug', 'apikey'
 
   getRateLimit: (response) ->
-    headers = response?.headers
-    
-    if headers['x-ratelimit-limit']
-      @rateLimit = headers['x-ratelimit-limit']
-    if headers['x-ratelimit-remaining']
-      @rateRemaining = headers['x-ratelimit-remaining']
-    
-    return @rateRemaining
+    if headers = response?.headers
+      if headers['x-ratelimit-limit']
+        @rateLimit = headers['x-ratelimit-limit']
+      if headers['x-ratelimit-remaining']
+        @rateRemaining = headers['x-ratelimit-remaining']
+    @rateRemaining
 
   wrapResponse: (rest) =>
     deferred = Q.defer()
