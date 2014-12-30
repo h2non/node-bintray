@@ -1,7 +1,4 @@
-# Node Bintray
-
-[![Build Status](https://travis-ci.org/h2non/node-bintray.png)](https://travis-ci.org/h2non/node-bintray)
-[![Dependency Status](https://gemnasium.com/h2non/node-bintray.png)](https://gemnasium.com/h2non/node-bintray)
+# Node Bintray [![Build Status](https://travis-ci.org/h2non/node-bintray.png)](https://travis-ci.org/h2non/node-bintray) [![Dependency Status](https://gemnasium.com/h2non/node-bintray.png)](https://gemnasium.com/h2non/node-bintray) [![NPM](https://img.shields.io/npm/v/bintray.svg)](https://www.npmjs.org/package/bintray)
 
 CLI and programmatic API client for Bintray.com
 
