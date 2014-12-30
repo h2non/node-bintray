@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/h2non/node-bintray.png)](https://travis-ci.org/h2non/node-bintray)
 [![Dependency Status](https://gemnasium.com/h2non/node-bintray.png)](https://gemnasium.com/h2non/node-bintray)
 
-CLI and Node.js client for Bintray.com
+CLI and programmatic API client for Bintray.com
 
 ## About
 
@@ -13,7 +13,7 @@ Bintray offers developers the fastest way to publish and consume OSS software re
 
 Click [here](https://bintray.com/howbintrayworks) for more information
 
-# Installation
+## Installation
 
 For CLI usage, is preferably you install the package globally
 
