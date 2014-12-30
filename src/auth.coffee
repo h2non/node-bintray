@@ -4,7 +4,7 @@ module.exports = class
 
   @credentials: null
   
-  @store: "#{__dirname}/../data/auth.json"
+  @store: ".bintray.json"
 
   @get: => 
     if @exists() and not @credentials
