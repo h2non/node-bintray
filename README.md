@@ -1,4 +1,4 @@
-# Node Bintray [![Build Status](https://travis-ci.org/h2non/node-bintray.png)](https://travis-ci.org/h2non/node-bintray) [![Dependency Status](https://gemnasium.com/h2non/node-bintray.png)](https://gemnasium.com/h2non/node-bintray) [![NPM](https://img.shields.io/npm/v/bintray.svg)](https://www.npmjs.org/package/bintray)
+# node-bintray [![Build Status](https://travis-ci.org/h2non/node-bintray.png)](https://travis-ci.org/h2non/node-bintray) [![Dependency Status](https://gemnasium.com/h2non/node-bintray.png)](https://gemnasium.com/h2non/node-bintray) [![NPM](https://img.shields.io/npm/v/bintray.svg)](https://www.npmjs.org/package/bintray)
 
 CLI and programmatic API client for Bintray.com
 
@@ -14,14 +14,14 @@ Click [here](https://bintray.com/howbintrayworks) for more information
 
 For CLI usage, is preferably you install the package globally
 
-```shell
+```bash
 $ npm install bintray -g
 ```
 
-Otherwise for JavaScript usage from your package you should install it locally
+For programmatic usage install it as runtime dependency
 
-```shell
-$ npm install bintray --save
+```bash
+$ npm install bintray [--save]
 ```
 
 ## Requirements
