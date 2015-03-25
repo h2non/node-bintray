@@ -12,13 +12,13 @@ Click [here](https://bintray.com/howbintrayworks) for more information
 
 ## Installation
 
-For CLI usage, is preferably you install the package globally
+For command-line usage, is preferably you install the package globally
 
 ```bash
 $ npm install bintray -g
 ```
 
-For programmatic usage install it as runtime dependency
+For programmatic usage, install it as runtime dependency
 
 ```bash
 $ npm install bintray [--save]
@@ -30,7 +30,7 @@ For full API usage, you must create an account at [Bintray.com](https://bintray.
 
 When you get the account, go to your user profile, click in `Edit` and then click in `API key` option menu for getting your API token.
 
-## CLI
+## Command-line interface
 
 For easy automation, usage from other languages or from your shell scripts you can use the full supported command-line interface:
 
