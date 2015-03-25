@@ -16,7 +16,7 @@ module.exports = class
     return data
 
   @fileExists: (filepath) =>
-    fs.fileExistsSync filepath
+    fs.existsSync filepath
 
   @error: (error) =>
     @log "Error:".red, "cannot get the resource [HTTP #{error.code} - #{error.status}]", error.response.req.path.green
