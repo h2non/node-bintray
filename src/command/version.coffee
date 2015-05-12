@@ -2,7 +2,7 @@ _ = require 'lodash'
 program = require 'commander'
 Bintray = require '../bintray'
 auth = require '../auth'
-{ readFile, printObj, log, die, error } = require '../common'
+{ readFile, fileExists, printObj, log, die, error } = require '../common'
 
 program
   .command('package-version <action> <organization> <repository> <pkgname> [versionfile]')
