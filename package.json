@@ -42,9 +42,9 @@
   "dependencies": {
     "restler": "~3.2.0",
     "q": "~2.0.0",
-    "commander": "~2.7.0",
-    "colors": "~1.0.0",
-    "lodash": "~3.5.0"
+    "commander": "~2.8.0",
+    "colors": "~1.1.0",
+    "lodash": "~3.8.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
