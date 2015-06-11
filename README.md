@@ -104,7 +104,7 @@ Available options for the `auth` command
 
 The current implementation only supports the REST API version `1.0`
 
-For more information about the current API stage, see the [Bintray API documentation](https://bintray.com/docs/api.html)
+For more information about the current API stage, see the [Bintray API documentation](https://bintray.com/docs/api)
 
 ### Basic example usage
 
@@ -147,7 +147,7 @@ repository.createPackage(myPackage)
 
 Creates a new Bintray instance for working with the API
 
-Autentication is optional for some resources (see [documentation](https://bintray.com/docs/api.html))
+Autentication is optional for some resources (see [documentation](https://bintray.com/docs/api))
 
 ```js
 var Bintray = require('bintray')
@@ -201,13 +201,13 @@ $ bintray repositories --help
 
 Get a list of repos writeable by subject (personal or organizational) This resource does not require authentication
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_repositories)
+[Link to documentation](https://bintray.com/docs/api#_get_repositories)
 
 #### getRepository ()
 
 Get general information about a repository of the specified user
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_repository)
+[Link to documentation](https://bintray.com/docs/api#_get_repository)
 
 #### selectRepository (repositoryName)
 
@@ -250,32 +250,32 @@ Switch to another subject
 
 Get general information about a specified package. This resource does not require authentication
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_packages)
+[Link to documentation](https://bintray.com/docs/api#_get_packages)
 
 #### getPackage (packageName)
 
 Get general information about a specified package. This resource is rate limit free
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_packages)
+[Link to documentation](https://bintray.com/docs/api#_get_packages)
 
 #### createPackage (packageObject)
 
 Creates a new package in the specified repo (user has to be an owner of the repo)
 
-[Link to documentation](https://bintray.com/docs/api.html#_create_package)
+[Link to documentation](https://bintray.com/docs/api#_create_package)
 
 #### deletePackage (packageName)
 
 Delete the specified package
 
-[Link to documentation](https://bintray.com/docs/api.html#_delete_package)
+[Link to documentation](https://bintray.com/docs/api#_delete_package)
 
 #### updatePackage (packageName, packageObject)
 
 Update the information of the specified package.
 Creates a new package in the specified repo (user has to be an owner of the repo)
 
-[Link to documentation](https://bintray.com/docs/api.html#_update_package)
+[Link to documentation](https://bintray.com/docs/api#_update_package)
 
 #### getPackageUrl (packageName[, repository])
 
@@ -318,49 +318,49 @@ $ bintray package-version --help
 
 Get general information about a specified version, or query for the latest version
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_version)
+[Link to documentation](https://bintray.com/docs/api#_get_version)
 
 #### createPackageVersion (packageName, versionObject)
 
 Creates a new version in the specified package (user has to be owner of the package)
 
-[Link to documentation](https://bintray.com/docs/api.html#_create_version)
+[Link to documentation](https://bintray.com/docs/api#_create_version)
 
 #### deletePackageVersion (packageName, version)
 
 Delete the specified version Published versions may be deleted within 30 days from their publish date.
 
-[Link to documentation](https://bintray.com/docs/api.html#_delete_version)
+[Link to documentation](https://bintray.com/docs/api#_delete_version)
 
 #### updatePackageVersion (packageName, version)
 
 Update the information of the specified version
 
-[Link to documentation](https://bintray.com/docs/api.html#_update_version)
+[Link to documentation](https://bintray.com/docs/api#_update_version)
 
 #### getVersionAttrs (packageName, attributes, version = '_latest')
 
 Get attributes associated with the specified package or version. If no attribute names are specified, return all attributes.
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_attributes)
+[Link to documentation](https://bintray.com/docs/api#_get_attributes)
 
 #### setPackageAttrs (packageName, attributesObj [, version])
 
 Associate attributes with the specified package or version, overriding all previous attributes.
 
-[Link to documentation](https://bintray.com/docs/api.html#_set_attributes)
+[Link to documentation](https://bintray.com/docs/api#_set_attributes)
 
 #### updatePackageAttrs (packageName, attributesObj [, version])
 
 Update attributes associated with the specified package or version.
 
-[Link to documentation](https://bintray.com/docs/api.html#_update_attributes)
+[Link to documentation](https://bintray.com/docs/api#_update_attributes)
 
 #### deletePackageAttrs (packageName, names [, version])
 
 Delete attributes associated with the specified repo, package or version. If no attribute names are specified, delete all attributes
 
-[Link to documentation](https://bintray.com/docs/api.html#_delete_attributes)
+[Link to documentation](https://bintray.com/docs/api#_delete_attributes)
 
 ### Search
 
@@ -406,35 +406,35 @@ $ bintray search --help
 
 Search for a repository. At least one of the name and description search fields need to be specified. Returns an array of results, where elements are similar to the result of getting a single repository.
 
-[Link to documentation](https://bintray.com/docs/api.html#_repository_search)
+[Link to documentation](https://bintray.com/docs/api#_repository_search)
 
 #### searchPackage (packageName, description [, subject = current, repository])
 
 Search for a package. At least one of the name and description search fields need to be specified. May take an optional single subject name and if specified, and optional (exact) repo name. Returns an array of results, where elements are similar to the result of getting a single package.
 
-[Link to documentation](https://bintray.com/docs/api.html#_package_search)
+[Link to documentation](https://bintray.com/docs/api#_package_search)
 
 #### searchUser (packageName)
 
-[Link to documentation](https://bintray.com/docs/api.html#_delete_attributes)
+[Link to documentation](https://bintray.com/docs/api#_delete_attributes)
 
 #### searchAttributes (attributesObj, name)
 
 Search for packages/versions inside a given repository matching a set of attributes.
 
-[Link to documentation](https://bintray.com/docs/api.html#_attribute_search)
+[Link to documentation](https://bintray.com/docs/api#_attribute_search)
 
 #### searchFile (filename [, repository])
 
 Search for a file by its name. name can take the * and ? wildcard characters. May take an optional (exact) repo name to search in.
 
-[Link to documentation](https://bintray.com/docs/api.html#_file_search_by_name)
+[Link to documentation](https://bintray.com/docs/api#_file_search_by_name)
 
 #### searchFileChecksum (hash [, repository])
 
 Search for a file by its sha1 checksum. May take an optional repo name to search in.
 
-[Link to documentation](https://bintray.com/docs/api.html#_file_search_by_checksum)
+[Link to documentation](https://bintray.com/docs/api#_file_search_by_checksum)
 
 ### User
 
@@ -463,13 +463,13 @@ $ bintray user --help
 
 Get general information about a specified repository owner
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_user)
+[Link to documentation](https://bintray.com/docs/api#_get_user)
 
 #### getUserFollowers (username [, startPosition = 0])
 
 Get followers of the specified repository owner
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_followers)
+[Link to documentation](https://bintray.com/docs/api#_get_followers)
 
 ### Files/Uploads
 
@@ -507,17 +507,17 @@ $ bintray files --help
 
 Upload content to the specified repository path, with package and version information (both required).
 
-[Link to documentation](https://bintray.com/docs/api.html#_upload_content)
+[Link to documentation](https://bintray.com/docs/api#_upload_content)
 
 #### mavenUpload (name, version, filePath [, remotePath = '/', publish = true, explode = false, mimeType = 'application/octet-stream'])
 
-[Link to documentation](https://bintray.com/docs/api.html#_maven_upload)
+[Link to documentation](https://bintray.com/docs/api#_maven_upload)
 
 #### publishPackage (name, version [, discard = false])
 
 Publish all unpublished content for a user’s package version. Returns the number of published files. Optionally, pass in a "discard” flag to discard any unpublished content, instead of publishing.
 
-[Link to documentation](https://bintray.com/docs/api.html#_publish_discard_uploaded_content)
+[Link to documentation](https://bintray.com/docs/api#_publish_discard_uploaded_content)
 
 ### Webhooks
 
@@ -553,26 +553,26 @@ $ bintray webhook --help
 
 Get all the webhooks registered for the specified subject, optionally for a specific repository.
 
-[Link to documentation](https://bintray.com/docs/api.html#_get_webhooks)
+[Link to documentation](https://bintray.com/docs/api#_get_webhooks)
 
 #### createWebhook (packageName, configObject)
 
 Register a webhook for receiving notifications on a new package release. By default a user can register up to 10 webhook callbacks.
 
-[Link to documentation](https://bintray.com/docs/api.html#_register_a_webhook)
+[Link to documentation](https://bintray.com/docs/api#_register_a_webhook)
 
 #### testWebhook (packageName, version, configObject)
 
 Test a webhook callback for the specified package release. 
 A webhook post request is authenticated with a authentication header that is the HMAC-MD5 of the registering subject’s API key seeded with package name, base64-encoded UTF-8 string.
 
-[Link to documentation](https://bintray.com/docs/api.html#_test_a_webhook)
+[Link to documentation](https://bintray.com/docs/api#_test_a_webhook)
 
 #### deleteWebhook (packageName)
 
 Delete a webhook associated with the specified package.
 
-[Link to documentation](https://bintray.com/docs/api.html#_delete_a_webhook)
+[Link to documentation](https://bintray.com/docs/api#_delete_a_webhook)
 
 ### Signing
 
@@ -601,13 +601,13 @@ $ bintray sing --help
 
 GPG sign the specified repository file. This operation requires enabling GPG signing on the targeted repo.
 
-[Link to documentation](https://bintray.com/docs/api.html#_gpg_sign_a_file)
+[Link to documentation](https://bintray.com/docs/api#_gpg_sign_a_file)
 
 #### signVersion (packageName, version [, passphrase])
 
 GPG sign all files associated with the specified version.
 
-[Link to documentation](https://bintray.com/docs/api.html#_gpg_sign_a_version)
+[Link to documentation](https://bintray.com/docs/api#_gpg_sign_a_version)
 
 ### Rate limits
 
@@ -619,7 +619,7 @@ Returns the total daily avaiable requests rate limit (defaults to 300)
 
 Returns the remaining API calls available for the current user
 
-For more information about the usage limits, take a look to the [documentation](https://bintray.com/docs/api.html#_limits)
+For more information about the usage limits, take a look to the [documentation](https://bintray.com/docs/api#_limits)
 
 
 ## Promises API
